@@ -408,14 +408,26 @@ function daysElapsed() {
   return Math.max(0, daysBetween(TRACKING_START, TODAY));
 }
 
+const TARGET_PACE = 3.5; // chapters per week — back-calculates ideal study start date
+
+function studyStartDate(username) {
+  const u = USERS[username];
+  const daysNeeded = Math.ceil((TOTAL_CHAPTERS - u.startChapter) / TARGET_PACE * 7);
+  const d = new Date(u.examDate);
+  d.setDate(d.getDate() - daysNeeded);
+  return d.toISOString().slice(0, 10);
+}
+
 // Chapters that should be completed by end of today (linear plan)
 function plannedChaptersToday(username) {
   const u = USERS[username];
   if (!u.examDate) return null;
-  const totalDays = daysBetween(TRACKING_START, u.examDate);
+  const start = studyStartDate(username);
+  if (TODAY <= start) return u.startChapter;  // study window hasn't opened yet
+  const totalDays = daysBetween(start, u.examDate);
   if (totalDays <= 0) return TOTAL_CHAPTERS;
+  const elapsed = daysBetween(start, TODAY);
   const remaining = TOTAL_CHAPTERS - u.startChapter;
-  const elapsed = daysElapsed();
   return Math.min(TOTAL_CHAPTERS, u.startChapter + (elapsed / totalDays) * remaining);
 }
 

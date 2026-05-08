@@ -4,17 +4,20 @@ Usage: python notify.py <type> <supabase_key>
 Types: daily-reminder | missed-checkin | weekly-report | behind-alert
 """
 import sys
+import math
 import json
 import requests
 from datetime import date, timedelta
 
 # ── CONFIG ──────────────────────────────────────────────
-SUPABASE_URL = 'https://cupdvksfzqpjedibajus.supabase.co'
-SUPABASE_KEY = sys.argv[2] if len(sys.argv) > 2 else ''
-SITE_URL     = 'https://jean-jia.github.io/sie-tracker/'
+SUPABASE_URL   = 'https://cupdvksfzqpjedibajus.supabase.co'
+SUPABASE_KEY   = sys.argv[2] if len(sys.argv) > 2 else ''
+SITE_URL       = 'https://jean-jia.github.io/sie-tracker/'
 TRACKING_START = date(2026, 5, 8)
 TOTAL_CHAPTERS = 20
-TODAY = date.today()
+TODAY          = date.today()
+TARGET_PACE    = 3.5   # chapters per week — used to back-calculate ideal study start date
+DRY_RUN        = '--dry-run' in sys.argv
 
 USERS = {
     'jiannbinkhor': {'name':'Jiannbin Khor', 'startChapter':11, 'examDate':date(2026,6,5),  'weeklyHours':11.5},
@@ -143,12 +146,21 @@ def fmt_date(d):
 def days_between(d1, d2):
     return (d2 - d1).days
 
+def study_start_date(username):
+    """Back-calculate when this user should have started studying at TARGET_PACE."""
+    u = USERS[username]
+    days_needed = math.ceil((TOTAL_CHAPTERS - u['startChapter']) / TARGET_PACE * 7)
+    return u['examDate'] - timedelta(days=days_needed)
+
 def planned_chapters_today(username):
     u = USERS[username]
-    total_days = days_between(TRACKING_START, u['examDate'])
+    start = study_start_date(username)
+    if TODAY <= start:
+        return u['startChapter']   # study window hasn't opened yet → on baseline
+    total_days = days_between(start, u['examDate'])
     if total_days <= 0:
         return TOTAL_CHAPTERS
-    elapsed = days_between(TRACKING_START, TODAY)
+    elapsed = days_between(start, TODAY)
     remaining = TOTAL_CHAPTERS - u['startChapter']
     return min(TOTAL_CHAPTERS, u['startChapter'] + (elapsed / total_days) * remaining)
 
@@ -182,6 +194,12 @@ def build_card(title, color, content, btn_label, btn_url):
     }
 
 def send_feishu(url, payload):
+    import json as _json
+    content = payload.get('card', {}).get('elements', [{}])[0].get('text', {}).get('content', '')
+    print(f'  Message preview:\n{content}\n')
+    if DRY_RUN:
+        print('  [DRY RUN] Skipping Feishu send.')
+        return True
     r = requests.post(url, json=payload)
     print(f'  Feishu response: {r.text}')
     return r.ok
@@ -197,7 +215,7 @@ def main():
     wh_data   = sb_get('webhook_config', 'id=eq.1')
 
     webhook_url = wh_data[0]['group_webhook'] if wh_data else ''
-    if not webhook_url:
+    if not webhook_url and not DRY_RUN:
         print('ERROR: No group webhook configured in Supabase webhook_config')
         sys.exit(1)
 
@@ -223,6 +241,15 @@ def main():
             cursor -= timedelta(days=1)
             if missed > 30: break
         return {'actual':actual, 'gap':gap, 'left':left, 'today_ci':today_ci, 'missed':missed}
+
+    if DRY_RUN:
+        print('─── Stats ───')
+        for u in USERS:
+            s = stats(u)
+            st_icon, st_label = get_status(s['gap'])
+            ssd = study_start_date(u)
+            print(f"  {USERS[u]['name']:20s} actual={s['actual']:2d} planned={planned_chapters_today(u):.1f} gap={s['gap']:+.1f} {st_icon}{st_label}  study_start={ssd}")
+        print('─────────────')
 
     quote    = get_quote()
     today_str = fmt_date(TODAY)

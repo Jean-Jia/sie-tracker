@@ -14,4 +14,4 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python .github/scripts/notify.py daily-reminder ${{ secrets.SUPABASE_ANON_KEY }}
+      - run: python .github/scripts/notify.py daily-reminder ${{ secrets.SUPABASE_ANON_KEY }} --dry-run
