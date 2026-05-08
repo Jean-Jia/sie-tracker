@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIE · 备考追踪</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg:#f6f4f0;--surface:#ffffff;--surface2:#f0ede7;--surface3:#e8e4dd;
@@ -189,6 +190,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .toast{position:fixed;bottom:24px;right:24px;background:#1c1a16;color:white;padding:10px 16px;border-radius:var(--r-sm);font-size:13px;z-index:200;transition:opacity .3s;pointer-events:none;}
 .toast.gone{opacity:0;}
 
+/* Loading overlay */
+#loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+#loading-overlay.hidden{display:none;}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green-mid);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:var(--text3);}
+
 /* Scrollbar */
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -279,6 +287,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
   </div>
 </div>
 
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">加载中…</div>
+</div>
+
 <!-- Toast -->
 <div class="toast gone" id="toast">—</div>
 
@@ -308,37 +322,68 @@ const USERS = {
 let currentUser = null;
 
 // ══════════════════════════════════════════════
-//  DATA LAYER
+//  SUPABASE + DATA LAYER
 // ══════════════════════════════════════════════
+const SB_URL = 'https://cupdvksfzqpjedibajus.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1cGR2a3NmenFwamVkaWJhanVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTc0NzIsImV4cCI6MjA5Mzc5MzQ3Mn0.RWr4fFn9_N9RMCfADg9IinHmjDWirpV6emBlcoYHNcs';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// Memory cache — all reads are sync from here; writes go async to Supabase
+const DB = { progress:{}, webhookConfig:{ groupWebhook:'', userOpenIds:{} } };
+
+function initChapters(username) {
+  const arr = [];
+  for (let i = 1; i <= (USERS[username].startChapter||0); i++) arr.push(i);
+  return arr;
+}
+
+async function loadAllData() {
+  const [{ data:progData }, { data:ciData }, { data:whData }] = await Promise.all([
+    sb.from('chapter_progress').select('*'),
+    sb.from('checkins').select('*'),
+    sb.from('webhook_config').select('*').eq('id',1).maybeSingle()
+  ]);
+  for (const username of Object.keys(USERS).filter(u => !USERS[u].isAdmin)) {
+    const prog = progData?.find(p => p.username === username);
+    const checkins = {};
+    ciData?.filter(c => c.username === username).forEach(c => {
+      checkins[c.date] = { hours: Number(c.hours), content: c.content, ts: c.created_at };
+    });
+    DB.progress[username] = {
+      completedChapters: prog?.completed_chapters ?? initChapters(username),
+      checkins
+    };
+  }
+  DB.webhookConfig = {
+    groupWebhook: whData?.group_webhook || '',
+    userOpenIds:  whData?.user_open_ids  || {}
+  };
+}
+
 function getProgress(username) {
-  const raw = localStorage.getItem(`sie_prog_${username}`);
-  if (raw) return JSON.parse(raw);
-  const u = USERS[username];
-  const init = [];
-  for (let i = 1; i <= (u.startChapter || 0); i++) init.push(i);
-  const data = { completedChapters: init, checkins: {} };
-  localStorage.setItem(`sie_prog_${username}`, JSON.stringify(data));
-  return data;
+  if (!DB.progress[username])
+    DB.progress[username] = { completedChapters: initChapters(username), checkins:{} };
+  return DB.progress[username];
 }
 
 function saveProgress(username, data) {
-  localStorage.setItem(`sie_prog_${username}`, JSON.stringify(data));
+  DB.progress[username] = data;
+  sb.from('chapter_progress').upsert({ username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() });
+  const ci = data.checkins[TODAY];
+  if (ci) sb.from('checkins').upsert({ username, date: TODAY, hours: ci.hours, content: ci.content }, { onConflict: 'username,date' });
 }
 
-function getWebhookConfig() {
-  const raw = localStorage.getItem('sie_webhooks');
-  return raw ? JSON.parse(raw) : { groupWebhook:'', userOpenIds:{} };
+function getWebhookConfig() { return DB.webhookConfig; }
+
+function saveWebhookConfig(cfg) {
+  DB.webhookConfig = cfg;
+  sb.from('webhook_config').upsert({ id:1, group_webhook: cfg.groupWebhook, user_open_ids: cfg.userOpenIds });
 }
 
 function atMention(username) {
-  const cfg = getWebhookConfig();
-  const openId = cfg.userOpenIds?.[username];
+  const openId = DB.webhookConfig.userOpenIds?.[username];
   const name = USERS[username].name;
   return openId ? `<at user_id="${openId}">${name}</at>` : name;
-}
-
-function saveWebhookConfig(cfg) {
-  localStorage.setItem('sie_webhooks', JSON.stringify(cfg));
 }
 
 // ══════════════════════════════════════════════
@@ -1163,7 +1208,9 @@ function startApp(username) {
   switchView(USERS[username].isAdmin ? 'admin' : 'dashboard');
 }
 
-function init() {
+async function init() {
+  await loadAllData();
+  document.getElementById('loading-overlay').classList.add('hidden');
   const saved = localStorage.getItem('sie_user');
   if (saved && USERS[saved]) { currentUser = saved; startApp(saved); }
 }
