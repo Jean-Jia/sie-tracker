@@ -434,6 +434,136 @@ function esc(s) {
 // ══════════════════════════════════════════════
 const SITE_URL = 'https://jean-jia.github.io/sie-tracker/';
 
+const QUOTES = [
+  // 坚持类 (1-20)
+  "The secret of getting ahead is getting started.",
+  "不是因为有希望才坚持，而是坚持了才会有希望。",
+  "Small daily improvements lead to staggering long-term results.",
+  "你现在的努力，是在为未来的自己铺路。",
+  "It does not matter how slowly you go as long as you do not stop.",
+  "每天进步一点点，考试就近了一点点。",
+  "Success is the sum of small efforts repeated day in and day out.",
+  "坚持不是因为相信结果，而是因为相信自己。",
+  "Don't watch the clock; do what it does. Keep going.",
+  "今天的你，正在成为未来更好的自己。",
+  "The pain you feel today will be the strength you feel tomorrow.",
+  "坚持下去，不是因为路的尽头有什么，而是走着走着就成了习惯。",
+  "Fall seven times, stand up eight.",
+  "没有捷径，只有脚踏实地。",
+  "A river cuts through rock not because of its power, but its persistence.",
+  "种一棵树最好的时间是十年前，其次是现在。",
+  "One step at a time is good walking.",
+  "慢慢来，比较快。",
+  "Perseverance is not a long race; it is many short races one after another.",
+  "坚持是一种习惯，也是一种态度。",
+  // 冲刺类 (21-40)
+  "The harder you work, the luckier you get.",
+  "距离终点越近，越不能放慢脚步。",
+  "Push yourself, because no one else is going to do it for you.",
+  "考试只是一个节点，你的努力才是真正的收获。",
+  "Believe you can and you're halfway there.",
+  "冲刺阶段最考验意志，也最能看出差距。",
+  "You didn't come this far to only come this far.",
+  "最后的坚持，往往是成功的开始。",
+  "Champions keep playing until they get it right.",
+  "不要让昨天的懈怠，成为今天的借口。",
+  "Pressure makes diamonds.",
+  "压力就是动力，挑战就是机遇。",
+  "The last mile is always the hardest.",
+  "越到最后越要稳住，胜负就在这里。",
+  "Sprint, not stumble — the finish line is close.",
+  "临考前的每一天，都是你拉开差距的机会。",
+  "It always seems impossible until it's done.",
+  "还没到最后一刻，就不要轻言放弃。",
+  "The night is darkest just before the dawn.",
+  "黎明前最黑暗，坚持就是胜利。",
+  // 自我激励类 (41-60)
+  "Doubt kills more dreams than failure ever will.",
+  "你比你想象的更有能力。",
+  "The only person you should try to be better than is who you were yesterday.",
+  "成功不是偶然的，它是日积月累的结果。",
+  "Wake up with determination. Go to bed with satisfaction.",
+  "每一次打开书本，都是对自己的一次投资。",
+  "Your future self will thank you for what you do today.",
+  "现在吃的苦，都会变成你的实力。",
+  "Excellence is not a destination but a continuous journey.",
+  "做到了才有资格说做不到，还没做就别放弃。",
+  "You are stronger than you think.",
+  "你比昨天的自己更强了，这就够了。",
+  "Motivation gets you started. Habit keeps you going.",
+  "自律是最高级的自由。",
+  "The difference between ordinary and extraordinary is that little extra.",
+  "普通人和优秀的人之间，差的就是每天多做一点。",
+  "Hard work beats talent when talent doesn't work hard.",
+  "努力不一定成功，但放弃一定失败。",
+  "Every expert was once a beginner.",
+  "每个高手都曾是初学者，你也一样。",
+  // 幽默轻松类 (61-80)
+  "Coffee in hand, notes open, let's go! ☕",
+  "学习使我快乐，不学习使我更快乐，但考试使我清醒。",
+  "Studying now so you can flex later. 💪",
+  "考过了就可以跟朋友吹牛了，加油！",
+  "Your brain has more capacity than your phone. Use it.",
+  "今天学的东西，明天就是你的竞争优势。",
+  "Be the person your future self is proud of.",
+  "考试不可怕，可怕的是没准备好。",
+  "Study hard, flex harder.",
+  "刷题一时爽，过关才是真的爽——所以现在就要好好学！",
+  "My brain is 90% finance facts and 10% song lyrics. Priorities. 🎵",
+  "学习虽苦，但通过考试的那一刻是甜的。",
+  "SIE won't study itself. Unfortunately.",
+  "证书不会自己长脚跑来，但努力会。",
+  "Plot twist: you actually enjoy studying. 📖",
+  "打卡一分钟，良心安一天。",
+  "Brain cells activated. Let's go! 🧠",
+  "今天不想学，那就学一点。",
+  "Sleep is good. Study is better. Passing is best.",
+  "睡得好不如学得好，学得好不如考得好。",
+  // 金融相关类 (81-100)
+  "Invest in your knowledge — the returns are guaranteed.",
+  "知识是唯一一种投资，回报率永远是正的。",
+  "In the market of life, education is the best asset.",
+  "学好SIE，就是给自己最好的职业投资。",
+  "The best investment you can make is in yourself. — Warren Buffett",
+  "你的证书，就是你最硬核的简历。",
+  "Risk comes from not knowing what you're doing. — Warren Buffett",
+  "考出来的不只是证书，是对自己的证明。",
+  "Financial knowledge is the foundation of financial freedom.",
+  "今天多学一章，未来多一份底气。",
+  "In investing, what is comfortable is rarely profitable.",
+  "走出舒适区，才能看到更大的市场。",
+  "The stock market rewards patience, so does studying.",
+  "备考就像建立投资组合：每天积累，长期复利。",
+  "Know what you own, and know why you own it. — Peter Lynch",
+  "搞清楚每一个知识点，就是最好的备考策略。",
+  "Compound interest is the eighth wonder of the world. — Einstein",
+  "学习也有复利效应：今天多学一章，明天事半功倍。",
+  "The four most dangerous words: 'this time it's different.'",
+  "考试没有捷径，只有扎实准备。"
+];
+
+function getQuote() {
+  const idx = daysBetween('2026-01-01', TODAY);
+  return QUOTES[((idx % QUOTES.length) + QUOTES.length) % QUOTES.length];
+}
+
+function getUserStatus(gap) {
+  if (gap === null || gap >= -0.3) return { icon:'🟢', label:'On Track' };
+  if (gap >= -2) return { icon:'🟡', label:'At Risk' };
+  return { icon:'🔴', label:'Off Track' };
+}
+
+function consecutiveMissedDays(username) {
+  const prog = getProgress(username);
+  let count = 0, cursor = TODAY;
+  while (!prog.checkins[cursor] && cursor >= TRACKING_START) {
+    count++;
+    cursor = offsetDate(cursor, -1);
+    if (count > 30) break;
+  }
+  return count;
+}
+
 async function sendFeishu(url, payload) {
   if (!url) return false;
   try {
@@ -475,17 +605,28 @@ async function doSendDailyReminder() {
   const cfg = getWebhookConfig();
   if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
   const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
-  const lines = [`<at id=all></at> 今天记得学习打卡！\n`];
-  for (const u of users) {
-    const actual = completedCount(u);
-    const gap = progressGap(u);
-    const left = daysUntilExam(u);
-    const dailyH = dailyHoursTarget(u).toFixed(1);
-    const gapStr = gap===null ? '' : gap<-0.5 ? ` ⚠️落后${Math.abs(gap).toFixed(1)}章` : gap>0.5 ? ` 🎉领先${gap.toFixed(1)}章` : ' 持平';
-    const ci = todayCheckin(u) ? '**✓已打卡**' : '待打卡';
-    lines.push(`**${USERS[u].name}**  目标${dailyH}h · ${actual}/${TOTAL_CHAPTERS}章${gapStr} · ${ci} · 剩${left}天`);
-  }
-  const card = buildCard(`📚 SIE备考提醒 · ${fmtDate(TODAY)}`, 'blue', lines.join('\n'), '打开备考工具 →', SITE_URL);
+  const sorted = users
+    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u) }))
+    .sort((a,b) => (b.gap||0)-(a.gap||0));
+  const medals = ['🥇','🥈','🥉'];
+  const lines = [
+    `"${getQuote()}"`,
+    '',
+    `<at id=all></at> 今日学习任务来了，冲！💪`,
+    '',
+    '━━━━━━━━━━━━━━━',
+    '🏆 进度排行榜',
+    '━━━━━━━━━━━━━━━'
+  ];
+  sorted.forEach((s, i) => {
+    const st = getUserStatus(s.gap);
+    const rowIcon = st.label === 'On Track' ? (medals[i] || '🟢') : st.label === 'At Risk' ? '⚠️' : '❌';
+    const gapStr = s.gap===null ? '持平' : s.gap>=0 ? `领先${s.gap.toFixed(1)}章` : `落后${Math.abs(s.gap).toFixed(1)}章`;
+    lines.push(`${rowIcon} **${USERS[s.u].name}**  ${s.actual}/${TOTAL_CHAPTERS}章  ${st.icon} ${st.label} · ${gapStr} · 剩${s.left}天`);
+  });
+  lines.push('━━━━━━━━━━━━━━━');
+  lines.push('今日目标：完成打卡 ✅');
+  const card = buildCard(`📚 SIE备考提醒 · ${fmtDate(TODAY)}`, 'blue', lines.join('\n'), '📎 打开备考工具 →', SITE_URL);
   const ok = await sendFeishu(cfg.groupWebhook, card);
   showToast(ok ? '今日提醒已发送到群' : '发送失败，请检查 Webhook');
 }
@@ -499,7 +640,7 @@ async function doSendMissed() {
   if (!missed.length) { showToast('昨天所有人都打卡了 ✓'); return; }
   const names = missed.map(u => `**${USERS[u].name}**`).join('、');
   const content = `<at id=all></at>\n\n昨天（${fmtDate(yesterday)}）以下同学没有打卡记录：\n${names}\n\n今天记得补上学习进度！加油 💪`;
-  const card = buildCard('⚠️ 昨日未打卡提醒', 'yellow', content, '去打卡 →', SITE_URL);
+  const card = buildCard('⚠️ 昨日未打卡提醒', 'yellow', content, '📎 去打卡 →', SITE_URL);
   const ok = await sendFeishu(cfg.groupWebhook, card);
   showToast(ok ? `已催促 ${missed.length} 位未打卡的同学` : '发送失败');
 }
@@ -507,19 +648,36 @@ async function doSendMissed() {
 async function doSendWeeklyReport() {
   const cfg = getWebhookConfig();
   if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
-  const list = Object.keys(USERS).filter(u => !USERS[u].isAdmin)
-    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u), ci:!!todayCheckin(u) }))
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+  const sorted = users
+    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u) }))
     .sort((a,b) => (b.gap||0)-(a.gap||0));
-  const lines = [`<at id=all></at>\n`];
-  list.forEach((s,i) => {
-    const name = USERS[s.u].name;
-    const gStr = s.gap===null ? '—' : s.gap>0.5 ? `🎉领先${s.gap.toFixed(1)}章` : s.gap<-0.5 ? `⚠️落后${Math.abs(s.gap).toFixed(1)}章` : '持平';
-    const ci = s.ci ? '✓' : '✗';
-    lines.push(`${i+1}. **${name}**  ${s.actual}/${TOTAL_CHAPTERS}章  ${gStr}  打卡${ci}  剩${s.left}天`);
-  });
-  const behind = list.filter(s => s.gap!==null && s.gap<-1);
-  if (behind.length) lines.push(`\n需要加油：${behind.map(s=>`**${USERS[s.u].name}**`).join('、')}`);
-  const card = buildCard(`📊 SIE备考周报 · ${fmtDate(TODAY)}`, 'green', lines.join('\n'), '查看详细进度 →', SITE_URL);
+  const onTrack  = sorted.filter(s => getUserStatus(s.gap).label === 'On Track');
+  const atRisk   = sorted.filter(s => getUserStatus(s.gap).label === 'At Risk');
+  const offTrack = sorted.filter(s => getUserStatus(s.gap).label === 'Off Track');
+  const medals = ['🥇','🥈','🥉'];
+  const renderRow = (s, icon) => {
+    const gapStr = s.gap===null ? '持平' : s.gap>=0 ? `领先${s.gap.toFixed(1)}章` : `落后${Math.abs(s.gap).toFixed(1)}章`;
+    return `${icon} **${USERS[s.u].name}** · ${s.actual}/${TOTAL_CHAPTERS}章 · ${gapStr} · 剩${s.left}天`;
+  };
+  const lines = [`"${getQuote()}"`, ''];
+  if (onTrack.length) {
+    lines.push('🟢 **On Track**');
+    onTrack.forEach((s,i) => lines.push(renderRow(s, medals[i]||'🟢')));
+    lines.push('');
+  }
+  if (atRisk.length) {
+    lines.push('🟡 **At Risk**');
+    atRisk.forEach(s => lines.push(renderRow(s, '⚠️')));
+    lines.push('');
+  }
+  if (offTrack.length) {
+    lines.push('🔴 **Off Track**');
+    offTrack.forEach(s => lines.push(renderRow(s, '❌')));
+    lines.push('');
+  }
+  if (atRisk.length || offTrack.length) lines.push('💡 落后的同学加油，考试不等人！');
+  const card = buildCard(`📊 SIE考牌项目 · 本周进度播报 · ${fmtDate(TODAY)}`, 'green', lines.join('\n'), '📎 打开备考工具 →', SITE_URL);
   const ok = await sendFeishu(cfg.groupWebhook, card);
   showToast(ok ? '周报已发送到群' : '发送失败，请检查 Webhook');
 }
@@ -528,17 +686,23 @@ async function doSendBehindAlert() {
   const cfg = getWebhookConfig();
   if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
   const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
-  const behind = users.filter(u => { const g = progressGap(u); return g !== null && g < -3; });
-  if (!behind.length) { showToast('目前没有落后超过3章的同学'); return; }
-  const lines = [`<at id=all></at>\n\n以下同学进度落后，需要加强学习节奏：\n`];
-  behind.forEach(u => {
+  const behind = users.filter(u => consecutiveMissedDays(u) >= 3);
+  if (!behind.length) { showToast('没有连续3天以上未打卡的同学'); return; }
+  const blocks = behind.map(u => {
+    const missedD = consecutiveMissedDays(u);
+    const actual = completedCount(u);
     const gap = progressGap(u);
     const left = daysUntilExam(u);
-    lines.push(`**${USERS[u].name}**  落后 ${Math.abs(gap).toFixed(1)} 章  距考试还有 ${left} 天`);
+    const gapStr = gap!==null && gap<0 ? `落后计划${Math.abs(gap).toFixed(1)}章` : '进度正常';
+    return `👋 **${USERS[u].name}**，你已经连续 **${missedD}天** 没有打卡了\n` +
+           `📊 当前进度：${actual}/${TOTAL_CHAPTERS}章，${gapStr}\n` +
+           `⏰ 距考试还有 ${left} 天\n` +
+           `现在开始还来得及，今天学一章就是进步！`;
   });
-  const card = buildCard('⚠️ SIE备考进度警报', 'red', lines.join('\n'), '去追进度 →', SITE_URL);
+  const content = `<at id=all></at>\n\n` + blocks.join('\n\n─────────────────\n\n');
+  const card = buildCard('⚠️ 备考进度催促', 'red', content, '📎 打开备考工具 →', SITE_URL);
   const ok = await sendFeishu(cfg.groupWebhook, card);
-  showToast(ok ? `已在群里提醒 ${behind.length} 位落后的同学` : '发送失败');
+  showToast(ok ? `已提醒 ${behind.length} 位连续未打卡的同学` : '发送失败');
 }
 
 // ══════════════════════════════════════════════
