@@ -584,7 +584,7 @@ function renderSidebar(username) {
 
   const navItems = u.isAdmin
     ? [{ v:'admin', icon:'👥', label:'所有人进度' }, { v:'settings', icon:'⚙️', label:'飞书通知配置' }]
-    : [{ v:'dashboard', icon:'📋', label:'今日仪表板' }, { v:'chapters', icon:'📚', label:'章节进度' }, { v:'settings', icon:'⚙️', label:'飞书设置' }];
+    : [{ v:'dashboard', icon:'📋', label:'今日仪表板' }, { v:'chapters', icon:'📚', label:'章节进度' }];
 
   document.getElementById('sb-nav').innerHTML = navItems.map(n =>
     `<div class="ni" data-view="${n.v}" onclick="switchView('${n.v}')"><span class="ni-icon">${n.icon}</span><span class="ni-label">${n.label}</span></div>`
