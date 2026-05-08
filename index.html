@@ -310,13 +310,13 @@ function localDateStr() {
 const TODAY = localDateStr();
 
 const USERS = {
-  jiannbinkhor: { name:'Jiannbin Khor', startChapter:11, examDate:'2026-06-05', weeklyHours:11.5, feishuId:'jiannbinkhor' },
-  nicholasneoh: { name:'Nicholas Neoh', startChapter:1,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'nicholasneoh' },
-  daisywang:    { name:'Daisy Wang',    startChapter:5,  examDate:'2026-06-25', weeklyHours:6,    feishuId:'daisywang'    },
-  cindylin:     { name:'Cindy Lin',     startChapter:0,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'cindylin'     },
-  suqinng:      { name:'Su Qin Ng',     startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'suqinng'      },
-  jeremyzhang:  { name:'Jeremy Zhang',  startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'jeremyzhang'  },
-  jeanjia:      { name:'Jean Jia',      startChapter:0,  examDate:null,         weeklyHours:0,    feishuId:'jeanjia', isAdmin:true }
+  jiannbinkhor: { name:'Jiannbin Khor', startChapter:11, examDate:'2026-06-05', weeklyHours:11.5, feishuId:'jiannbinkhor', studyStart:'2026-04-06' },
+  nicholasneoh: { name:'Nicholas Neoh', startChapter:1,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'nicholasneoh', studyStart:'2026-04-13' },
+  daisywang:    { name:'Daisy Wang',    startChapter:5,  examDate:'2026-06-25', weeklyHours:6,    feishuId:'daisywang',    studyStart:'2026-04-10' },
+  cindylin:     { name:'Cindy Lin',     startChapter:0,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'cindylin',     studyStart:'2026-04-06' },
+  suqinng:      { name:'Su Qin Ng',     startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'suqinng',      studyStart:'2026-04-20' },
+  jeremyzhang:  { name:'Jeremy Zhang',  startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'jeremyzhang',  studyStart:'2026-04-30' },
+  jeanjia:      { name:'Jean Jia',      startChapter:0,  examDate:null,         weeklyHours:0,    feishuId:'jeanjia', isAdmin:true, studyStart:null }
 };
 
 let currentUser = null;
@@ -408,27 +408,14 @@ function daysElapsed() {
   return Math.max(0, daysBetween(TRACKING_START, TODAY));
 }
 
-const TARGET_PACE = 3.5; // chapters per week — back-calculates ideal study start date
-
-function studyStartDate(username) {
-  const u = USERS[username];
-  const daysNeeded = Math.ceil((TOTAL_CHAPTERS - u.startChapter) / TARGET_PACE * 7);
-  const d = new Date(u.examDate);
-  d.setDate(d.getDate() - daysNeeded);
-  return d.toISOString().slice(0, 10);
-}
-
-// Chapters that should be completed by end of today (linear plan)
+// Chapters that should be completed by end of today (linear plan from actual study start)
 function plannedChaptersToday(username) {
   const u = USERS[username];
-  if (!u.examDate) return null;
-  const start = studyStartDate(username);
-  if (TODAY <= start) return u.startChapter;  // study window hasn't opened yet
-  const totalDays = daysBetween(start, u.examDate);
+  if (!u.examDate || !u.studyStart) return null;
+  const totalDays = daysBetween(u.studyStart, u.examDate);
   if (totalDays <= 0) return TOTAL_CHAPTERS;
-  const elapsed = daysBetween(start, TODAY);
-  const remaining = TOTAL_CHAPTERS - u.startChapter;
-  return Math.min(TOTAL_CHAPTERS, u.startChapter + (elapsed / totalDays) * remaining);
+  const elapsed = Math.max(0, daysBetween(u.studyStart, TODAY));
+  return Math.min(TOTAL_CHAPTERS, (elapsed / totalDays) * TOTAL_CHAPTERS);
 }
 
 function completedCount(username) {

@@ -4,7 +4,6 @@ Usage: python notify.py <type> <supabase_key>
 Types: daily-reminder | missed-checkin | weekly-report | behind-alert
 """
 import sys
-import math
 import json
 import requests
 from datetime import date, timedelta
@@ -16,16 +15,15 @@ SITE_URL       = 'https://jean-jia.github.io/sie-tracker/'
 TRACKING_START = date(2026, 5, 8)
 TOTAL_CHAPTERS = 20
 TODAY          = date.today()
-TARGET_PACE    = 3.5   # chapters per week — used to back-calculate ideal study start date
 DRY_RUN        = '--dry-run' in sys.argv
 
 USERS = {
-    'jiannbinkhor': {'name':'Jiannbin Khor', 'startChapter':11, 'examDate':date(2026,6,5),  'weeklyHours':11.5},
-    'nicholasneoh': {'name':'Nicholas Neoh', 'startChapter':1,  'examDate':date(2026,7,5),  'weeklyHours':5},
-    'daisywang':    {'name':'Daisy Wang',    'startChapter':5,  'examDate':date(2026,6,25), 'weeklyHours':6},
-    'cindylin':     {'name':'Cindy Lin',     'startChapter':0,  'examDate':date(2026,7,5),  'weeklyHours':5},
-    'suqinng':      {'name':'Su Qin Ng',     'startChapter':0,  'examDate':date(2026,6,15), 'weeklyHours':9},
-    'jeremyzhang':  {'name':'Jeremy Zhang',  'startChapter':0,  'examDate':date(2026,6,15), 'weeklyHours':9},
+    'jiannbinkhor': {'name':'Jiannbin Khor', 'startChapter':11, 'examDate':date(2026,6,5),  'weeklyHours':11.5, 'studyStart':date(2026,4,6)},
+    'nicholasneoh': {'name':'Nicholas Neoh', 'startChapter':1,  'examDate':date(2026,7,5),  'weeklyHours':5,    'studyStart':date(2026,4,13)},
+    'daisywang':    {'name':'Daisy Wang',    'startChapter':5,  'examDate':date(2026,6,25), 'weeklyHours':6,    'studyStart':date(2026,4,10)},
+    'cindylin':     {'name':'Cindy Lin',     'startChapter':0,  'examDate':date(2026,7,5),  'weeklyHours':5,    'studyStart':date(2026,4,6)},
+    'suqinng':      {'name':'Su Qin Ng',     'startChapter':0,  'examDate':date(2026,6,15), 'weeklyHours':9,    'studyStart':date(2026,4,20)},
+    'jeremyzhang':  {'name':'Jeremy Zhang',  'startChapter':0,  'examDate':date(2026,6,15), 'weeklyHours':9,    'studyStart':date(2026,4,30)},
 }
 
 QUOTES = [
@@ -146,23 +144,13 @@ def fmt_date(d):
 def days_between(d1, d2):
     return (d2 - d1).days
 
-def study_start_date(username):
-    """Back-calculate when this user should have started studying at TARGET_PACE."""
-    u = USERS[username]
-    days_needed = math.ceil((TOTAL_CHAPTERS - u['startChapter']) / TARGET_PACE * 7)
-    return u['examDate'] - timedelta(days=days_needed)
-
 def planned_chapters_today(username):
     u = USERS[username]
-    start = study_start_date(username)
-    if TODAY <= start:
-        return u['startChapter']   # study window hasn't opened yet → on baseline
-    total_days = days_between(start, u['examDate'])
+    total_days = days_between(u['studyStart'], u['examDate'])
     if total_days <= 0:
         return TOTAL_CHAPTERS
-    elapsed = days_between(start, TODAY)
-    remaining = TOTAL_CHAPTERS - u['startChapter']
-    return min(TOTAL_CHAPTERS, u['startChapter'] + (elapsed / total_days) * remaining)
+    elapsed = max(0, days_between(u['studyStart'], TODAY))
+    return min(TOTAL_CHAPTERS, (elapsed / total_days) * TOTAL_CHAPTERS)
 
 def get_status(gap):
     if gap is None or gap >= -0.3:
@@ -247,8 +235,7 @@ def main():
         for u in USERS:
             s = stats(u)
             st_icon, st_label = get_status(s['gap'])
-            ssd = study_start_date(u)
-            print(f"  {USERS[u]['name']:20s} actual={s['actual']:2d} planned={planned_chapters_today(u):.1f} gap={s['gap']:+.1f} {st_icon}{st_label}  study_start={ssd}")
+            print(f"  {USERS[u]['name']:20s} actual={s['actual']:2d} planned={planned_chapters_today(u):.1f} gap={s['gap']:+.1f} {st_icon}{st_label}  study_start={USERS[u]['studyStart']}")
         print('─────────────')
 
     quote    = get_quote()
