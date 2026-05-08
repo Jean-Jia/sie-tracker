@@ -432,55 +432,61 @@ function esc(s) {
 // ══════════════════════════════════════════════
 //  FEISHU
 // ══════════════════════════════════════════════
-async function sendFeishu(url, text) {
+const SITE_URL = 'https://jean-jia.github.io/sie-tracker/';
+
+async function sendFeishu(url, payload) {
   if (!url) return false;
   try {
     await fetch(url, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({msg_type:'text', content:{text}})
+      body:JSON.stringify(payload)
     });
     return true;
   } catch { return false; }
 }
 
-function msgWeeklyReport() {
-  const list = Object.keys(USERS).filter(u => !USERS[u].isAdmin)
-    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u), ci:!!todayCheckin(u) }))
-    .sort((a,b) => (b.gap||0)-(a.gap||0));
-  const lines = [`📊 SIE备考周报 · ${fmtDate(TODAY)}`, ''];
-  lines.push('进度排名：');
-  list.forEach((s,i) => {
-    const name = USERS[s.u].name;
-    const gStr = s.gap===null ? '—' : s.gap>0.5 ? `领先${s.gap.toFixed(1)}章` : s.gap<-0.5 ? `⚠️落后${Math.abs(s.gap).toFixed(1)}章` : '持平';
-    lines.push(`${i+1}. ${name}  ${s.actual}/${TOTAL_CHAPTERS}章  ${gStr}  ${s.ci?'✓打卡':'✗未卡'}  剩${s.left}天`);
-  });
-  const behind = list.filter(s => s.gap!==null && s.gap<-1);
-  if (behind.length) lines.push('\n需要加油：' + behind.map(s=>USERS[s.u].name).join('、'));
-  return lines.join('\n');
-}
-
-function msgBehindAlert(username) {
-  const u = USERS[username];
-  const gap = progressGap(username);
-  return `⚠️ SIE备考警报\n\nHi ${u.name}，你当前落后进度 ${Math.abs(gap||0).toFixed(1)} 章。距考试还有 ${daysUntilExam(username)} 天，建议这周加强学习节奏！`;
+function buildCard(title, color, content, btnLabel, btnUrl) {
+  return {
+    msg_type: 'interactive',
+    card: {
+      config: { wide_screen_mode: true },
+      header: {
+        title: { tag: 'plain_text', content: title },
+        template: color
+      },
+      elements: [
+        { tag: 'div', text: { tag: 'lark_md', content } },
+        {
+          tag: 'action',
+          actions: [{
+            tag: 'button',
+            text: { tag: 'plain_text', content: btnLabel },
+            type: 'primary',
+            url: btnUrl
+          }]
+        }
+      ]
+    }
+  };
 }
 
 async function doSendDailyReminder() {
   const cfg = getWebhookConfig();
   if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
   const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
-  const lines = [`📚 SIE备考提醒 · ${fmtDate(TODAY)}\n`];
+  const lines = [`<at id=all></at> 今天记得学习打卡！\n`];
   for (const u of users) {
     const actual = completedCount(u);
     const gap = progressGap(u);
     const left = daysUntilExam(u);
     const dailyH = dailyHoursTarget(u).toFixed(1);
-    const gapStr = gap === null ? '' : gap < -0.5 ? ` ⚠️落后${Math.abs(gap).toFixed(1)}章` : gap > 0.5 ? ` 🎉领先${gap.toFixed(1)}章` : ' 进度持平';
-    const ci = todayCheckin(u) ? '✓已打卡' : '待打卡';
-    lines.push(`${atMention(u)} 今日目标${dailyH}h · 进度${actual}/${TOTAL_CHAPTERS}章${gapStr} · ${ci} · 剩${left}天`);
+    const gapStr = gap===null ? '' : gap<-0.5 ? ` ⚠️落后${Math.abs(gap).toFixed(1)}章` : gap>0.5 ? ` 🎉领先${gap.toFixed(1)}章` : ' 持平';
+    const ci = todayCheckin(u) ? '**✓已打卡**' : '待打卡';
+    lines.push(`**${USERS[u].name}**  目标${dailyH}h · ${actual}/${TOTAL_CHAPTERS}章${gapStr} · ${ci} · 剩${left}天`);
   }
-  const ok = await sendFeishu(cfg.groupWebhook, lines.join('\n'));
+  const card = buildCard(`📚 SIE备考提醒 · ${fmtDate(TODAY)}`, 'blue', lines.join('\n'), '打开备考工具 →', SITE_URL);
+  const ok = await sendFeishu(cfg.groupWebhook, card);
   showToast(ok ? '今日提醒已发送到群' : '发送失败，请检查 Webhook');
 }
 
@@ -491,17 +497,31 @@ async function doSendMissed() {
   const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
   const missed = users.filter(u => !getProgress(u).checkins[yesterday]);
   if (!missed.length) { showToast('昨天所有人都打卡了 ✓'); return; }
-  const mentions = missed.map(u => atMention(u)).join(' ');
-  const text = `⚠️ 昨日（${fmtDate(yesterday)}）未打卡提醒\n\n${mentions}\n\n昨天没有打卡记录，今天记得补上学习进度！加油💪`;
-  const ok = await sendFeishu(cfg.groupWebhook, text);
-  showToast(ok ? `已在群里提醒 ${missed.length} 位未打卡的同学` : '发送失败');
+  const names = missed.map(u => `**${USERS[u].name}**`).join('、');
+  const content = `<at id=all></at>\n\n昨天（${fmtDate(yesterday)}）以下同学没有打卡记录：\n${names}\n\n今天记得补上学习进度！加油 💪`;
+  const card = buildCard('⚠️ 昨日未打卡提醒', 'yellow', content, '去打卡 →', SITE_URL);
+  const ok = await sendFeishu(cfg.groupWebhook, card);
+  showToast(ok ? `已催促 ${missed.length} 位未打卡的同学` : '发送失败');
 }
 
 async function doSendWeeklyReport() {
   const cfg = getWebhookConfig();
   if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
-  const ok = await sendFeishu(cfg.groupWebhook, msgWeeklyReport());
-  showToast(ok ? '周报已发送到群' : '发送失败，请检查 Webhook 地址');
+  const list = Object.keys(USERS).filter(u => !USERS[u].isAdmin)
+    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u), ci:!!todayCheckin(u) }))
+    .sort((a,b) => (b.gap||0)-(a.gap||0));
+  const lines = [`<at id=all></at>\n`];
+  list.forEach((s,i) => {
+    const name = USERS[s.u].name;
+    const gStr = s.gap===null ? '—' : s.gap>0.5 ? `🎉领先${s.gap.toFixed(1)}章` : s.gap<-0.5 ? `⚠️落后${Math.abs(s.gap).toFixed(1)}章` : '持平';
+    const ci = s.ci ? '✓' : '✗';
+    lines.push(`${i+1}. **${name}**  ${s.actual}/${TOTAL_CHAPTERS}章  ${gStr}  打卡${ci}  剩${s.left}天`);
+  });
+  const behind = list.filter(s => s.gap!==null && s.gap<-1);
+  if (behind.length) lines.push(`\n需要加油：${behind.map(s=>`**${USERS[s.u].name}**`).join('、')}`);
+  const card = buildCard(`📊 SIE备考周报 · ${fmtDate(TODAY)}`, 'green', lines.join('\n'), '查看详细进度 →', SITE_URL);
+  const ok = await sendFeishu(cfg.groupWebhook, card);
+  showToast(ok ? '周报已发送到群' : '发送失败，请检查 Webhook');
 }
 
 async function doSendBehindAlert() {
@@ -510,13 +530,14 @@ async function doSendBehindAlert() {
   const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
   const behind = users.filter(u => { const g = progressGap(u); return g !== null && g < -3; });
   if (!behind.length) { showToast('目前没有落后超过3章的同学'); return; }
-  const lines = [`⚠️ SIE备考进度警报 · ${fmtDate(TODAY)}\n`];
+  const lines = [`<at id=all></at>\n\n以下同学进度落后，需要加强学习节奏：\n`];
   behind.forEach(u => {
     const gap = progressGap(u);
     const left = daysUntilExam(u);
-    lines.push(`${atMention(u)} 落后进度 ${Math.abs(gap).toFixed(1)} 章，距考试还有 ${left} 天，请加强学习节奏！`);
+    lines.push(`**${USERS[u].name}**  落后 ${Math.abs(gap).toFixed(1)} 章  距考试还有 ${left} 天`);
   });
-  const ok = await sendFeishu(cfg.groupWebhook, lines.join('\n'));
+  const card = buildCard('⚠️ SIE备考进度警报', 'red', lines.join('\n'), '去追进度 →', SITE_URL);
+  const ok = await sendFeishu(cfg.groupWebhook, card);
   showToast(ok ? `已在群里提醒 ${behind.length} 位落后的同学` : '发送失败');
 }
 
