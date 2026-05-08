@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIE · 备考追踪</title>
+<style>
+:root {
+  --bg:#f6f4f0;--surface:#ffffff;--surface2:#f0ede7;--surface3:#e8e4dd;
+  --border:#e2ddd6;--border2:#cdc8be;
+  --text:#1c1a16;--text2:#6b6258;--text3:#a09890;
+  --green:#1a6e4a;--green-bg:#e6f4ed;--green-mid:#3daa78;--green-light:#b8dfc9;
+  --red:#b83232;--red-bg:#fce8e8;--red-light:#f0b8b8;
+  --amber:#8a5f00;--amber-bg:#fff3d4;--amber-light:#f0d99a;
+  --blue:#1a4f8a;--blue-bg:#e6f0fb;--blue-light:#b3cff0;
+  --sw:224px;
+  --mono:'DM Mono','Courier New',monospace;
+  --sans:'DM Sans','PingFang SC','Microsoft YaHei',sans-serif;
+  --r:10px;--r-sm:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+
+/* ── Login ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.login-logo{font-family:var(--mono);font-size:10px;color:var(--green-mid);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.login-title{font-size:22px;font-weight:600;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;}
+.login-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--sans);font-size:14px;background:var(--surface);color:var(--text);margin-bottom:12px;cursor:pointer;appearance:none;}
+.login-select:focus{outline:none;border-color:var(--green-mid);}
+.login-btn{width:100%;padding:10px;background:var(--green);color:white;border:none;border-radius:var(--r-sm);font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer;transition:background .15s;}
+.login-btn:hover{background:var(--green-mid);}
+
+/* ── App Layout ── */
+#app-screen{display:flex;min-height:100vh;}
+.hidden{display:none!important;}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sw);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:50;}
+.sb-brand{padding:18px 16px 12px;border-bottom:1px solid var(--border);}
+.sb-logo{font-family:var(--mono);font-size:9px;color:var(--green-mid);letter-spacing:.14em;text-transform:uppercase;}
+.sb-title{font-size:15px;font-weight:600;margin-top:2px;}
+.sb-user{margin:10px 10px 0;padding:8px 10px;background:var(--surface2);border-radius:var(--r-sm);border:1px solid var(--border);}
+.sb-user-name{font-size:13px;font-weight:600;}
+.sb-user-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:1px;}
+.exam-widget{margin:8px 10px 0;background:var(--green-bg);border:1px solid var(--green-light);border-radius:var(--r-sm);padding:8px 10px;}
+.ew-label{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.ew-days{font-family:var(--mono);font-size:30px;font-weight:500;color:var(--green);line-height:1;}
+.ew-sub{font-size:10px;color:var(--green);margin-top:2px;}
+.sb-nav{padding:6px 0;flex:1;}
+.nav-sec{padding:10px 16px 3px;font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;}
+.ni:hover{background:var(--surface2);}
+.ni.active{background:#edf7f2;border-left-color:var(--green-mid);}
+.ni-icon{font-size:14px;min-width:18px;}
+.ni-label{font-size:12px;color:var(--text2);font-weight:500;}
+.ni.active .ni-label{color:var(--text);}
+.sb-logout{padding:10px 16px;border-top:1px solid var(--border);}
+.logout-btn{width:100%;padding:7px;background:none;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--sans);font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;}
+.logout-btn:hover{background:var(--surface2);color:var(--text);}
+
+/* ── Main ── */
+.main{margin-left:var(--sw);flex:1;padding:32px 40px;max-width:960px;}
+.view{display:none;}
+.view.active{display:block;}
+
+/* Page Header */
+.page-header{margin-bottom:24px;}
+.page-title{font-size:20px;font-weight:600;margin-bottom:2px;}
+.page-sub{font-size:13px;color:var(--text2);}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* Stat Box */
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.stat-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.stat-value{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1.1;}
+.stat-value.green{color:var(--green);}
+.stat-value.red{color:var(--red);}
+.stat-value.amber{color:var(--amber);}
+.stat-unit{font-size:12px;color:var(--text2);margin-top:3px;}
+
+/* Alert */
+.alert{padding:10px 14px;border-radius:var(--r-sm);font-size:13px;margin-bottom:12px;}
+.alert-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-light);}
+.alert-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-light);}
+.alert-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-light);}
+
+/* Progress Bar */
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0;}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s;}
+.prog-fill.green{background:var(--green-mid);}
+.prog-fill.red{background:var(--red);}
+.prog-fill.amber{background:var(--amber);}
+
+/* Streak Dots */
+.streak-dots{display:flex;gap:3px;flex-wrap:wrap;}
+.dot{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:var(--mono);background:var(--border);color:var(--text3);}
+.dot.ok{background:var(--green-bg);color:var(--green);}
+.dot.today-ok{background:var(--green-mid);color:white;}
+.dot.today-no{background:var(--amber-bg);color:var(--amber);}
+.dot.missed{background:var(--red-bg);color:var(--red);}
+
+/* Check-in */
+.checkin-area{text-align:center;padding:20px 0;}
+.checkin-btn{padding:12px 36px;background:var(--green);color:white;border:none;border-radius:var(--r);font-family:var(--sans);font-size:15px;font-weight:500;cursor:pointer;transition:background .15s;}
+.checkin-btn:hover{background:var(--green-mid);}
+.checkin-done-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--green-bg);border:1px solid var(--green-light);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:500;}
+.checkin-row{padding:11px 0;border-bottom:1px solid var(--border);}
+.checkin-row:last-child{border-bottom:none;}
+.checkin-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.checkin-date{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.checkin-hours{font-family:var(--mono);font-size:11px;color:var(--green);background:var(--green-bg);padding:1px 7px;border-radius:4px;}
+.checkin-content{font-size:13px;color:var(--text2);line-height:1.5;}
+
+/* Chapter Grid */
+.chapter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+.ch-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;user-select:none;}
+.ch-item:hover{border-color:var(--border2);}
+.ch-item.done{background:var(--green-bg);border-color:var(--green-light);}
+.ch-item input[type=checkbox]{accent-color:var(--green);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
+.ch-num{font-family:var(--mono);font-size:10px;color:var(--text3);font-weight:700;}
+.ch-item.done .ch-num{color:var(--green-mid);}
+.ch-name{font-size:12px;color:var(--text2);font-weight:500;}
+.ch-item.done .ch-name{color:var(--green);}
+
+/* Gap text */
+.gap-ahead{color:var(--green);font-weight:500;}
+.gap-behind{color:var(--red);font-weight:500;}
+.gap-on-track{color:var(--amber);font-weight:500;}
+
+/* Badge */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:600;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-amber{background:var(--amber-bg);color:var(--amber);}
+
+/* Admin Table */
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2);}
+.admin-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+.admin-table tbody tr:last-child td{border-bottom:none;}
+.admin-table tbody tr{cursor:pointer;transition:background .1s;}
+.admin-table tbody tr:hover td{background:var(--surface2);}
+.click-hint{font-size:11px;color:var(--text3);font-style:italic;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;}
+.modal{background:var(--surface);border-radius:14px;padding:28px;width:500px;max-width:92vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;}
+.form-req{color:var(--red);}
+.form-input,.form-textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;background:var(--surface);color:var(--text);transition:border-color .15s;}
+.form-input:focus,.form-textarea:focus{outline:none;border-color:var(--green-mid);}
+.form-textarea{resize:vertical;min-height:90px;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.btn{padding:9px 20px;border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--green);color:white;}
+.btn-primary:hover{background:var(--green-mid);}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--surface3);}
+
+/* Webhook Settings */
+.wh-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.wh-row:last-child{border-bottom:none;}
+.wh-name{font-size:13px;font-weight:500;min-width:130px;}
+.wh-input{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--mono);color:var(--text2);}
+.wh-input:focus{outline:none;border-color:var(--green-mid);}
+
+/* Notification Buttons */
+.notif-btn{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;gap:12px;}
+.notif-btn-title{font-size:13px;font-weight:500;}
+.notif-btn-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.send-btn{padding:5px 14px;background:var(--green);color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.send-btn:hover{background:var(--green-mid);}
+
+/* Empty State */
+.empty-state{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1c1a16;color:white;padding:10px 16px;border-radius:var(--r-sm);font-size:13px;z-index:200;transition:opacity .3s;pointer-events:none;}
+.toast.gone{opacity:0;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">SIE · Exam Tracker</div>
+    <div class="login-title">SIE 备考追踪</div>
+    <div class="login-sub">选择你的账号进入</div>
+    <select class="login-select" id="login-select">
+      <option value="">— 选择账号 —</option>
+      <option value="jiannbinkhor">Jiannbin Khor</option>
+      <option value="nicholasneoh">Nicholas Neoh</option>
+      <option value="daisywang">Daisy Wang</option>
+      <option value="cindylin">Cindy Lin</option>
+      <option value="suqinng">Su Qin Ng</option>
+      <option value="jeremyzhang">Jeremy Zhang</option>
+      <option value="jeanjia">Jean Jia（管理员）</option>
+    </select>
+    <button class="login-btn" onclick="handleLogin()">进入</button>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app-screen" class="hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">SIE · Exam Tracker</div>
+      <div class="sb-title">备考追踪</div>
+    </div>
+    <div style="padding:10px 10px 0;">
+      <div class="sb-user">
+        <div class="sb-user-name" id="sb-name">—</div>
+        <div class="sb-user-sub" id="sb-sub">—</div>
+      </div>
+    </div>
+    <div id="sb-exam-widget"></div>
+    <nav class="sb-nav" id="sb-nav"></nav>
+    <div class="sb-logout">
+      <button class="logout-btn" onclick="handleLogout()">退出登录</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="view" id="view-dashboard"></div>
+    <div class="view" id="view-chapters"></div>
+    <div class="view" id="view-admin"></div>
+    <div class="view" id="view-settings"></div>
+  </main>
+</div>
+
+<!-- ═══ CHECK-IN MODAL ═══ -->
+<div class="modal-overlay hidden" id="modal-checkin">
+  <div class="modal">
+    <div class="modal-title">今日打卡</div>
+    <div class="modal-sub" id="modal-checkin-date">—</div>
+    <div class="form-group">
+      <label class="form-label">学习时长（小时）<span class="form-req">*</span></label>
+      <input type="number" class="form-input" id="ci-hours" min="0.5" max="24" step="0.5" placeholder="例：2.5">
+    </div>
+    <div class="form-group">
+      <label class="form-label">今天学了什么？<span class="form-req">*</span> <span style="color:var(--text3);font-weight:400;">（认真填写，防止为打卡而打卡）</span></label>
+      <textarea class="form-textarea" id="ci-content" style="min-height:110px;" placeholder="请具体描述今天学习的内容，例：学习第3章 Municipal Securities，重点理解了 GO bonds vs Revenue bonds 的区别，做了20道练习题，正确率75%…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-checkin')">取消</button>
+      <button class="btn btn-primary" onclick="submitCheckin()">提交打卡 ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN DETAIL MODAL ═══ -->
+<div class="modal-overlay hidden" id="modal-admin-detail">
+  <div class="modal" style="width:560px;">
+    <div class="modal-title" id="detail-title">—</div>
+    <div class="modal-sub" id="detail-sub">—</div>
+    <div id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-admin-detail')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast gone" id="toast">—</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+const TRACKING_START = '2026-05-08';
+const TOTAL_CHAPTERS = 20;
+
+function localDateStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+const TODAY = localDateStr();
+
+const USERS = {
+  jiannbinkhor: { name:'Jiannbin Khor', startChapter:11, examDate:'2026-06-05', weeklyHours:11.5, feishuId:'jiannbinkhor' },
+  nicholasneoh: { name:'Nicholas Neoh', startChapter:1,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'nicholasneoh' },
+  daisywang:    { name:'Daisy Wang',    startChapter:5,  examDate:'2026-06-25', weeklyHours:6,    feishuId:'daisywang'    },
+  cindylin:     { name:'Cindy Lin',     startChapter:0,  examDate:'2026-07-05', weeklyHours:5,    feishuId:'cindylin'     },
+  suqinng:      { name:'Su Qin Ng',     startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'suqinng'      },
+  jeremyzhang:  { name:'Jeremy Zhang',  startChapter:0,  examDate:'2026-06-15', weeklyHours:9,    feishuId:'jeremyzhang'  },
+  jeanjia:      { name:'Jean Jia',      startChapter:0,  examDate:null,         weeklyHours:0,    feishuId:'jeanjia', isAdmin:true }
+};
+
+let currentUser = null;
+
+// ══════════════════════════════════════════════
+//  DATA LAYER
+// ══════════════════════════════════════════════
+function getProgress(username) {
+  const raw = localStorage.getItem(`sie_prog_${username}`);
+  if (raw) return JSON.parse(raw);
+  const u = USERS[username];
+  const init = [];
+  for (let i = 1; i <= (u.startChapter || 0); i++) init.push(i);
+  const data = { completedChapters: init, checkins: {} };
+  localStorage.setItem(`sie_prog_${username}`, JSON.stringify(data));
+  return data;
+}
+
+function saveProgress(username, data) {
+  localStorage.setItem(`sie_prog_${username}`, JSON.stringify(data));
+}
+
+function getWebhookConfig() {
+  const raw = localStorage.getItem('sie_webhooks');
+  return raw ? JSON.parse(raw) : { groupWebhook:'', userOpenIds:{} };
+}
+
+function atMention(username) {
+  const cfg = getWebhookConfig();
+  const openId = cfg.userOpenIds?.[username];
+  const name = USERS[username].name;
+  return openId ? `<at user_id="${openId}">${name}</at>` : name;
+}
+
+function saveWebhookConfig(cfg) {
+  localStorage.setItem('sie_webhooks', JSON.stringify(cfg));
+}
+
+// ══════════════════════════════════════════════
+//  CALCULATIONS
+// ══════════════════════════════════════════════
+function daysBetween(a, b) {
+  return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
+}
+
+function offsetDate(d, n) {
+  const dt = new Date(d+'T00:00:00');
+  dt.setDate(dt.getDate() + n);
+  return dt.toISOString().slice(0,10);
+}
+
+function daysUntilExam(username) {
+  const exam = USERS[username].examDate;
+  return exam ? daysBetween(TODAY, exam) : null;
+}
+
+function daysElapsed() {
+  return Math.max(0, daysBetween(TRACKING_START, TODAY));
+}
+
+// Chapters that should be completed by end of today (linear plan)
+function plannedChaptersToday(username) {
+  const u = USERS[username];
+  if (!u.examDate) return null;
+  const totalDays = daysBetween(TRACKING_START, u.examDate);
+  if (totalDays <= 0) return TOTAL_CHAPTERS;
+  const remaining = TOTAL_CHAPTERS - u.startChapter;
+  const elapsed = daysElapsed();
+  return Math.min(TOTAL_CHAPTERS, u.startChapter + (elapsed / totalDays) * remaining);
+}
+
+function completedCount(username) {
+  return getProgress(username).completedChapters.length;
+}
+
+function progressGap(username) {
+  const planned = plannedChaptersToday(username);
+  if (planned === null) return null;
+  return completedCount(username) - planned; // + ahead, - behind
+}
+
+function dailyHoursTarget(username) {
+  return USERS[username].weeklyHours / 7;
+}
+
+function todayCheckin(username) {
+  return getProgress(username).checkins[TODAY] || null;
+}
+
+function checkinStreak(username) {
+  const dates = Object.keys(getProgress(username).checkins);
+  let streak = 0, cursor = TODAY;
+  while (dates.includes(cursor)) { streak++; cursor = offsetDate(cursor, -1); }
+  return streak;
+}
+
+function missedDays(username) {
+  const dates = Object.keys(getProgress(username).checkins);
+  const elapsed = daysElapsed();
+  const done = dates.filter(d => d >= TRACKING_START && d <= TODAY).length;
+  return Math.max(0, elapsed - done);
+}
+
+function getLast7Days() {
+  return Array.from({length:7}, (_,i) => offsetDate(TODAY, i-6));
+}
+
+// ══════════════════════════════════════════════
+//  FORMATTERS
+// ══════════════════════════════════════════════
+function fmtDate(d) {
+  const dt = new Date(d+'T00:00:00');
+  return `${dt.getMonth()+1}月${dt.getDate()}日`;
+}
+
+function fmtGap(gap) {
+  if (gap === null) return '—';
+  if (Math.abs(gap) < 0.3) return '<span class="gap-on-track">进度持平</span>';
+  if (gap > 0) return `<span class="gap-ahead">领先 ${gap.toFixed(1)} 章</span>`;
+  return `<span class="gap-behind">落后 ${Math.abs(gap).toFixed(1)} 章</span>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════════
+//  FEISHU
+// ══════════════════════════════════════════════
+async function sendFeishu(url, text) {
+  if (!url) return false;
+  try {
+    await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({msg_type:'text', content:{text}})
+    });
+    return true;
+  } catch { return false; }
+}
+
+function msgWeeklyReport() {
+  const list = Object.keys(USERS).filter(u => !USERS[u].isAdmin)
+    .map(u => ({ u, gap:progressGap(u), actual:completedCount(u), left:daysUntilExam(u), ci:!!todayCheckin(u) }))
+    .sort((a,b) => (b.gap||0)-(a.gap||0));
+  const lines = [`📊 SIE备考周报 · ${fmtDate(TODAY)}`, ''];
+  lines.push('进度排名：');
+  list.forEach((s,i) => {
+    const name = USERS[s.u].name;
+    const gStr = s.gap===null ? '—' : s.gap>0.5 ? `领先${s.gap.toFixed(1)}章` : s.gap<-0.5 ? `⚠️落后${Math.abs(s.gap).toFixed(1)}章` : '持平';
+    lines.push(`${i+1}. ${name}  ${s.actual}/${TOTAL_CHAPTERS}章  ${gStr}  ${s.ci?'✓打卡':'✗未卡'}  剩${s.left}天`);
+  });
+  const behind = list.filter(s => s.gap!==null && s.gap<-1);
+  if (behind.length) lines.push('\n需要加油：' + behind.map(s=>USERS[s.u].name).join('、'));
+  return lines.join('\n');
+}
+
+function msgBehindAlert(username) {
+  const u = USERS[username];
+  const gap = progressGap(username);
+  return `⚠️ SIE备考警报\n\nHi ${u.name}，你当前落后进度 ${Math.abs(gap||0).toFixed(1)} 章。距考试还有 ${daysUntilExam(username)} 天，建议这周加强学习节奏！`;
+}
+
+async function doSendDailyReminder() {
+  const cfg = getWebhookConfig();
+  if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+  const lines = [`📚 SIE备考提醒 · ${fmtDate(TODAY)}\n`];
+  for (const u of users) {
+    const actual = completedCount(u);
+    const gap = progressGap(u);
+    const left = daysUntilExam(u);
+    const dailyH = dailyHoursTarget(u).toFixed(1);
+    const gapStr = gap === null ? '' : gap < -0.5 ? ` ⚠️落后${Math.abs(gap).toFixed(1)}章` : gap > 0.5 ? ` 🎉领先${gap.toFixed(1)}章` : ' 进度持平';
+    const ci = todayCheckin(u) ? '✓已打卡' : '待打卡';
+    lines.push(`${atMention(u)} 今日目标${dailyH}h · 进度${actual}/${TOTAL_CHAPTERS}章${gapStr} · ${ci} · 剩${left}天`);
+  }
+  const ok = await sendFeishu(cfg.groupWebhook, lines.join('\n'));
+  showToast(ok ? '今日提醒已发送到群' : '发送失败，请检查 Webhook');
+}
+
+async function doSendMissed() {
+  const cfg = getWebhookConfig();
+  if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
+  const yesterday = offsetDate(TODAY, -1);
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+  const missed = users.filter(u => !getProgress(u).checkins[yesterday]);
+  if (!missed.length) { showToast('昨天所有人都打卡了 ✓'); return; }
+  const mentions = missed.map(u => atMention(u)).join(' ');
+  const text = `⚠️ 昨日（${fmtDate(yesterday)}）未打卡提醒\n\n${mentions}\n\n昨天没有打卡记录，今天记得补上学习进度！加油💪`;
+  const ok = await sendFeishu(cfg.groupWebhook, text);
+  showToast(ok ? `已在群里提醒 ${missed.length} 位未打卡的同学` : '发送失败');
+}
+
+async function doSendWeeklyReport() {
+  const cfg = getWebhookConfig();
+  if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
+  const ok = await sendFeishu(cfg.groupWebhook, msgWeeklyReport());
+  showToast(ok ? '周报已发送到群' : '发送失败，请检查 Webhook 地址');
+}
+
+async function doSendBehindAlert() {
+  const cfg = getWebhookConfig();
+  if (!cfg.groupWebhook) { showToast('请先配置群 Webhook'); return; }
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+  const behind = users.filter(u => { const g = progressGap(u); return g !== null && g < -3; });
+  if (!behind.length) { showToast('目前没有落后超过3章的同学'); return; }
+  const lines = [`⚠️ SIE备考进度警报 · ${fmtDate(TODAY)}\n`];
+  behind.forEach(u => {
+    const gap = progressGap(u);
+    const left = daysUntilExam(u);
+    lines.push(`${atMention(u)} 落后进度 ${Math.abs(gap).toFixed(1)} 章，距考试还有 ${left} 天，请加强学习节奏！`);
+  });
+  const ok = await sendFeishu(cfg.groupWebhook, lines.join('\n'));
+  showToast(ok ? `已在群里提醒 ${behind.length} 位落后的同学` : '发送失败');
+}
+
+// ══════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('gone');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('gone'), 3200);
+}
+
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(`view-${view}`).classList.add('active');
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.ni[data-view="${view}"]`)?.classList.add('active');
+  if (view === 'dashboard') renderDashboard();
+  else if (view === 'chapters') renderChapters();
+  else if (view === 'admin') renderAdmin();
+  else if (view === 'settings') renderSettings();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: SIDEBAR
+// ══════════════════════════════════════════════
+function renderSidebar(username) {
+  const u = USERS[username];
+  document.getElementById('sb-name').textContent = u.name;
+  document.getElementById('sb-sub').textContent = u.isAdmin ? '管理员' : `考试：${u.examDate}`;
+
+  const examWidget = document.getElementById('sb-exam-widget');
+  if (!u.isAdmin && u.examDate) {
+    const days = daysUntilExam(username);
+    examWidget.innerHTML = `<div style="padding:0 10px 8px;"><div class="exam-widget"><div class="ew-label">距考试</div><div class="ew-days">${days}</div><div class="ew-sub">天 · ${u.examDate}</div></div></div>`;
+  } else {
+    examWidget.innerHTML = '';
+  }
+
+  const navItems = u.isAdmin
+    ? [{ v:'admin', icon:'👥', label:'所有人进度' }, { v:'settings', icon:'⚙️', label:'飞书通知配置' }]
+    : [{ v:'dashboard', icon:'📋', label:'今日仪表板' }, { v:'chapters', icon:'📚', label:'章节进度' }, { v:'settings', icon:'⚙️', label:'飞书设置' }];
+
+  document.getElementById('sb-nav').innerHTML = navItems.map(n =>
+    `<div class="ni" data-view="${n.v}" onclick="switchView('${n.v}')"><span class="ni-icon">${n.icon}</span><span class="ni-label">${n.label}</span></div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  const u = USERS[currentUser];
+  const prog = getProgress(currentUser);
+  const actual = prog.completedChapters.length;
+  const planned = plannedChaptersToday(currentUser) || 0;
+  const gap = progressGap(currentUser);
+  const streak = checkinStreak(currentUser);
+  const missed = missedDays(currentUser);
+  const ci = todayCheckin(currentUser);
+  const dailyH = dailyHoursTarget(currentUser);
+
+  const pct = Math.min(100, Math.round(actual / TOTAL_CHAPTERS * 100));
+  const planPct = Math.min(100, Math.round(planned / TOTAL_CHAPTERS * 100));
+
+  // Alerts
+  let alerts = '';
+  if (gap !== null && gap < -2)
+    alerts += `<div class="alert alert-red">⚠️ 当前落后进度约 ${Math.abs(gap).toFixed(1)} 章，需要加速学习！</div>`;
+  else if (gap !== null && gap > 1)
+    alerts += `<div class="alert alert-green">🎉 当前领先进度约 ${gap.toFixed(1)} 章，继续保持！</div>`;
+  if (missed > 2)
+    alerts += `<div class="alert alert-amber">📌 已有 ${missed} 天未打卡，请保持学习节奏。</div>`;
+
+  // Streak dots (last 7 days)
+  const dots = getLast7Days().map(d => {
+    const hasCi = !!prog.checkins[d];
+    const dayNum = new Date(d+'T00:00:00').getDate();
+    let cls = '';
+    if (d === TODAY) cls = hasCi ? 'today-ok' : 'today-no';
+    else if (d < TRACKING_START) cls = '';
+    else cls = hasCi ? 'ok' : 'missed';
+    return `<div class="dot ${cls}" title="${d}">${dayNum}</div>`;
+  }).join('');
+
+  // Check-in section
+  const ciSection = ci
+    ? `<div style="text-align:center;">
+         <div class="checkin-done-badge">✓ 今日已打卡 · ${ci.hours}h</div>
+         <div style="margin-top:10px;padding:12px 14px;background:var(--surface2);border-radius:var(--r-sm);text-align:left;font-size:13px;color:var(--text2);line-height:1.6;">${esc(ci.content)}</div>
+       </div>`
+    : `<div class="checkin-area">
+         <button class="checkin-btn" onclick="openCheckinModal()">今日打卡</button>
+         <div style="margin-top:8px;font-size:12px;color:var(--text3);">记录今天的学习时间和内容</div>
+       </div>`;
+
+  // Recent check-ins
+  const recent = Object.keys(prog.checkins).sort().reverse().slice(0, 5);
+  const recentHtml = recent.length === 0
+    ? '<div class="empty-state">暂无打卡记录，开始你的第一次打卡吧！</div>'
+    : recent.map(d => {
+        const c = prog.checkins[d];
+        return `<div class="checkin-row">
+          <div class="checkin-row-top">
+            <span class="checkin-date">${fmtDate(d)} · ${d}</span>
+            <span class="checkin-hours">${c.hours}h</span>
+          </div>
+          <div class="checkin-content">${esc(c.content)}</div>
+        </div>`;
+      }).join('');
+
+  document.getElementById('view-dashboard').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">今日仪表板</div>
+      <div class="page-sub">${fmtDate(TODAY)} · ${u.name}</div>
+    </div>
+    ${alerts}
+    <div class="grid-3" style="margin-bottom:12px;">
+      <div class="stat-box">
+        <div class="stat-label">今日目标</div>
+        <div class="stat-value">${dailyH.toFixed(1)}</div>
+        <div class="stat-unit">小时 / 天</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">章节进度</div>
+        <div class="stat-value ${gap!==null&&gap<0?'red':'green'}">${actual}<span style="font-size:16px;color:var(--text3);">/${TOTAL_CHAPTERS}</span></div>
+        <div class="stat-unit">${fmtGap(gap)}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">连续打卡</div>
+        <div class="stat-value">${streak}</div>
+        <div class="stat-unit">天</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:500;">总体进度</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3);">${actual} / ${TOTAL_CHAPTERS} 章</div>
+      </div>
+      <div class="prog-bar" style="height:8px;">
+        <div class="prog-fill green" style="width:${pct}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:11px;color:var(--text3);">实际 ${pct}%</span>
+        <span style="font-size:11px;color:var(--text3);">今日计划应达 ${planPct}%（${planned.toFixed(1)} 章）</span>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">近 7 天打卡</div>
+      <div class="streak-dots">${dots}</div>
+      <div style="margin-top:6px;font-size:11px;color:var(--text3);">绿色=已打卡 · 橙色=今天未打卡 · 红色=缺卡</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;">今日打卡</div>
+      ${ciSection}
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">近期打卡记录</div>
+      ${recentHtml}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: CHAPTERS
+// ══════════════════════════════════════════════
+function renderChapters() {
+  const prog = getProgress(currentUser);
+  const completed = prog.completedChapters;
+  const actual = completed.length;
+  const planned = plannedChaptersToday(currentUser) || 0;
+  const gap = progressGap(currentUser);
+  const pct = Math.round(actual / TOTAL_CHAPTERS * 100);
+  const planPct = Math.min(100, Math.round(planned / TOTAL_CHAPTERS * 100));
+
+  const chapters = Array.from({length: TOTAL_CHAPTERS}, (_, i) => {
+    const n = i + 1;
+    const done = completed.includes(n);
+    return `<label class="ch-item ${done?'done':''}">
+      <input type="checkbox" ${done?'checked':''} onchange="toggleChapter(${n}, this.checked)">
+      <div>
+        <div class="ch-num">CH.${String(n).padStart(2,'0')}</div>
+        <div class="ch-name">第 ${n} 章</div>
+      </div>
+    </label>`;
+  }).join('');
+
+  document.getElementById('view-chapters').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">章节进度</div>
+      <div class="page-sub">SIE · 共 20 章 · 勾选已完成章节</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="grid-2" style="margin-bottom:12px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">实际完成</div>
+          <div style="font-family:var(--mono);font-size:26px;font-weight:500;">${actual}<span style="font-size:14px;color:var(--text3);">/${TOTAL_CHAPTERS}</span></div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">今日计划目标</div>
+          <div style="font-family:var(--mono);font-size:26px;font-weight:500;">${planned.toFixed(1)}<span style="font-size:14px;color:var(--text3);"> 章</span></div>
+        </div>
+      </div>
+      <div class="prog-bar" style="height:8px;">
+        <div class="prog-fill ${gap!==null&&gap<0?'red':'green'}" style="width:${pct}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:11px;color:var(--text3);">实际 ${pct}%</span>
+        <span style="font-size:11px;color:var(--text3);">计划 ${planPct}%</span>
+      </div>
+      <div style="margin-top:8px;font-size:13px;">${fmtGap(gap)}</div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">章节列表</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">点击勾选已完成的章节</div>
+      <div class="chapter-grid">${chapters}</div>
+    </div>`;
+}
+
+function toggleChapter(num, checked) {
+  const prog = getProgress(currentUser);
+  if (checked && !prog.completedChapters.includes(num)) {
+    prog.completedChapters.push(num);
+    prog.completedChapters.sort((a,b)=>a-b);
+  } else if (!checked) {
+    prog.completedChapters = prog.completedChapters.filter(c => c !== num);
+  }
+  saveProgress(currentUser, prog);
+  renderChapters();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: ADMIN
+// ══════════════════════════════════════════════
+function renderAdmin() {
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+
+  const checkedIn = users.filter(u => !!todayCheckin(u)).length;
+  const behindCnt = users.filter(u => { const g = progressGap(u); return g!==null && g<-1; }).length;
+
+  const rows = users.map(username => {
+    const u = USERS[username];
+    const actual = completedCount(username);
+    const gap = progressGap(username);
+    const left = daysUntilExam(username);
+    const ci = todayCheckin(username);
+    const streak = checkinStreak(username);
+
+    const gapBadge = gap===null ? '—'
+      : gap<-2 ? `<span class="badge badge-red">落后 ${Math.abs(gap).toFixed(1)}章</span>`
+      : gap>1  ? `<span class="badge badge-green">领先 ${gap.toFixed(1)}章</span>`
+      : `<span class="badge badge-amber">持平</span>`;
+
+    const ciBadge = ci
+      ? `<span class="badge badge-green">✓ 已打卡</span>`
+      : `<span class="badge badge-red">✗ 未打卡</span>`;
+
+    return `<tr onclick="openAdminDetail('${username}')">
+      <td><strong>${esc(u.name)}</strong></td>
+      <td><span style="font-family:var(--mono);">${actual}/${TOTAL_CHAPTERS}</span></td>
+      <td>${gapBadge}</td>
+      <td>${ciBadge}</td>
+      <td><span style="font-family:var(--mono);">${streak}天</span></td>
+      <td><span style="font-family:var(--mono);">${left??'—'}天</span></td>
+      <td style="font-size:12px;color:var(--text3);">${u.examDate||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('view-admin').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">所有人进度总览</div>
+      <div class="page-sub">点击任意一行查看该用户的详细打卡记录</div>
+    </div>
+    <div class="grid-3" style="margin-bottom:16px;">
+      <div class="stat-box">
+        <div class="stat-label">今日已打卡</div>
+        <div class="stat-value ${checkedIn<users.length?'amber':'green'}">${checkedIn}<span style="font-size:16px;color:var(--text3);">/${users.length}</span></div>
+        <div class="stat-unit">人</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">落后人数</div>
+        <div class="stat-value ${behindCnt>0?'red':'green'}">${behindCnt}</div>
+        <div class="stat-unit">人落后进度</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">今日日期</div>
+        <div class="stat-value" style="font-size:18px;">${fmtDate(TODAY)}</div>
+        <div class="stat-unit">${TODAY}</div>
+      </div>
+    </div>
+    <div class="card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>章节</th>
+            <th>vs 计划</th>
+            <th>今日打卡</th>
+            <th>连续打卡</th>
+            <th>剩余天数</th>
+            <th>考试日期</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function openAdminDetail(username) {
+  const u = USERS[username];
+  const prog = getProgress(username);
+  const actual = completedCount(username);
+  const gap = progressGap(username);
+  const left = daysUntilExam(username);
+
+  document.getElementById('detail-title').textContent = `${u.name} · 打卡记录`;
+  document.getElementById('detail-sub').textContent =
+    `章节进度 ${actual}/${TOTAL_CHAPTERS} · ${fmtGap(gap).replace(/<[^>]+>/g,'')} · 距考试 ${left??'—'} 天`;
+
+  const dates = Object.keys(prog.checkins).sort().reverse();
+  const body = dates.length === 0
+    ? '<div class="empty-state">暂无打卡记录</div>'
+    : dates.map(d => {
+        const c = prog.checkins[d];
+        return `<div class="checkin-row">
+          <div class="checkin-row-top">
+            <span class="checkin-date">${fmtDate(d)} · ${d}</span>
+            <span class="checkin-hours">${c.hours}h</span>
+          </div>
+          <div class="checkin-content">${esc(c.content)}</div>
+        </div>`;
+      }).join('');
+
+  document.getElementById('detail-body').innerHTML = body;
+  document.getElementById('modal-admin-detail').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: SETTINGS
+// ══════════════════════════════════════════════
+function renderSettings() {
+  const cfg = getWebhookConfig();
+  const isAdmin = USERS[currentUser]?.isAdmin;
+  const users = Object.keys(USERS).filter(u => !USERS[u].isAdmin);
+
+  const userRows = users.map(u => {
+    const val = cfg.userOpenIds?.[u] || '';
+    return `<div class="wh-row">
+      <span class="wh-name">${esc(USERS[u].name)}</span>
+      <input class="wh-input" type="text" id="wh_${u}" value="${esc(val)}" placeholder="飞书 open_id（ou_xxxxxxxx）">
+    </div>`;
+  }).join('');
+
+  const notifSection = isAdmin ? `
+    <div class="card" style="margin-top:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;">手动发送通知</div>
+      <div class="notif-btn">
+        <div><div class="notif-btn-title">今日学习提醒</div><div class="notif-btn-sub">向所有人发送今日任务私信</div></div>
+        <button class="send-btn" onclick="doSendDailyReminder()">发送</button>
+      </div>
+      <div class="notif-btn">
+        <div><div class="notif-btn-title">催促昨日未打卡</div><div class="notif-btn-sub">向昨天没打卡的人发送私信催促</div></div>
+        <button class="send-btn" onclick="doSendMissed()">发送</button>
+      </div>
+      <div class="notif-btn">
+        <div><div class="notif-btn-title">发送周报</div><div class="notif-btn-sub">将所有人进度排名发到群里</div></div>
+        <button class="send-btn" onclick="doSendWeeklyReport()">发送</button>
+      </div>
+      <div class="notif-btn">
+        <div><div class="notif-btn-title">催促落后同学</div><div class="notif-btn-sub">向落后超过 3 章的人发送私信催促</div></div>
+        <button class="send-btn" onclick="doSendBehindAlert()">发送</button>
+      </div>
+    </div>` : '';
+
+  document.getElementById('view-settings').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">飞书通知设置</div>
+      <div class="page-sub">配置 Webhook 地址后，可手动触发各类通知</div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">群 Webhook（用于周报/群播报）</div>
+      <input class="form-input" type="text" id="wh_group" value="${esc(cfg.groupWebhook||'')}" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/...">
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">飞书 open_id（用于 @mention）</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">填写后，发通知时会 @ 对应的人。不填也可用，只是不会 @ 到人。获取方式：飞书开发者后台 → 搜索用户 → 复制 open_id（格式：ou_xxxxxxxx）</div>
+      ${userRows}
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary" onclick="saveWebhooks()">保存配置</button>
+    </div>
+    ${notifSection}`;
+}
+
+function saveWebhooks() {
+  const cfg = getWebhookConfig();
+  cfg.groupWebhook = document.getElementById('wh_group').value.trim();
+  cfg.userOpenIds = cfg.userOpenIds || {};
+  Object.keys(USERS).filter(u => !USERS[u].isAdmin).forEach(u => {
+    const el = document.getElementById(`wh_${u}`);
+    if (el) cfg.userOpenIds[u] = el.value.trim();
+  });
+  saveWebhookConfig(cfg);
+  showToast('配置已保存 ✓');
+}
+
+// ══════════════════════════════════════════════
+//  CHECK-IN
+// ══════════════════════════════════════════════
+function openCheckinModal() {
+  document.getElementById('modal-checkin-date').textContent = `${fmtDate(TODAY)} · 今日学习记录`;
+  document.getElementById('ci-hours').value = '';
+  document.getElementById('ci-content').value = '';
+  document.getElementById('modal-checkin').classList.remove('hidden');
+}
+
+function submitCheckin() {
+  const hours = parseFloat(document.getElementById('ci-hours').value);
+  const content = document.getElementById('ci-content').value.trim();
+  if (!hours || hours <= 0) { showToast('请填写学习时长'); return; }
+  if (!content) { showToast('请填写今天学了什么（必填）'); return; }
+  if (content.length < 10) { showToast('学习内容描述太简短，请认真填写'); return; }
+
+  const prog = getProgress(currentUser);
+  prog.checkins[TODAY] = { hours, content, ts: new Date().toISOString() };
+  saveProgress(currentUser, prog);
+  closeModal('modal-checkin');
+  showToast('打卡成功！');
+  renderDashboard();
+}
+
+// ══════════════════════════════════════════════
+//  APP LIFECYCLE
+// ══════════════════════════════════════════════
+function handleLogin() {
+  const sel = document.getElementById('login-select').value;
+  if (!sel) { showToast('请选择账号'); return; }
+  localStorage.setItem('sie_user', sel);
+  currentUser = sel;
+  startApp(sel);
+}
+
+function handleLogout() {
+  localStorage.removeItem('sie_user');
+  currentUser = null;
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function startApp(username) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').classList.remove('hidden');
+  getProgress(username); // ensure initialized
+  renderSidebar(username);
+  switchView(USERS[username].isAdmin ? 'admin' : 'dashboard');
+}
+
+function init() {
+  const saved = localStorage.getItem('sie_user');
+  if (saved && USERS[saved]) { currentUser = saved; startApp(saved); }
+}
+
+init();
+</script>
+</body>
+</html>
