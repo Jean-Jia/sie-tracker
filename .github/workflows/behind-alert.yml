@@ -2,7 +2,7 @@ name: Behind Alert
 
 on:
   schedule:
-    - cron: '30 1 * * *'  # 09:30 Malaysia (UTC+8)
+    - cron: '28 1 * * *'  # 09:28 Malaysia (UTC+8)
   workflow_dispatch:
 
 jobs:

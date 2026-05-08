@@ -2,7 +2,7 @@ name: Daily Morning Reminder
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # 09:00 Malaysia (UTC+8)
+    - cron: '3 1 * * *'   # 09:03 Malaysia (UTC+8)
   workflow_dispatch:
 
 jobs:

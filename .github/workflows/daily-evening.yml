@@ -2,7 +2,7 @@ name: Daily Evening Missed Check-in
 
 on:
   schedule:
-    - cron: '0 13 * * *'  # 21:00 Malaysia (UTC+8)
+    - cron: '7 13 * * *'  # 21:07 Malaysia (UTC+8)
   workflow_dispatch:
 
 jobs:
