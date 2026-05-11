@@ -201,6 +201,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── Knowledge Base ── */
+.ch-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ch-pill{padding:5px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;transition:all .15s;background:var(--surface2);}
+.ch-pill.active{background:var(--green);color:white;border-color:var(--green);}
+.ch-pill:hover:not(.active){border-color:var(--border2);background:var(--surface3);}
+.filter-pills{display:flex;gap:6px;}
+.filter-pill{padding:4px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;transition:all .15s;background:var(--surface2);}
+.filter-pill.active{background:var(--green-bg);color:var(--green);border-color:var(--green-light);}
+.filter-pill:hover:not(.active){border-color:var(--border2);}
+.official-box{background:var(--blue-bg);border:1px solid var(--blue-light);border-radius:var(--r-sm);padding:14px 16px;}
+.official-label{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.official-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;}
+.note-card{padding:12px 0;border-bottom:1px solid var(--border);}
+.note-card:last-of-type{border-bottom:none;}
+.note-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.note-author{font-size:13px;font-weight:600;color:var(--text);}
+.note-badges{display:flex;align-items:center;gap:6px;}
+.note-body{font-size:13px;color:var(--text2);line-height:1.6;white-space:pre-wrap;}
+.note-add-form{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.privacy-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.privacy-toggle input{accent-color:var(--green);}
+.section-hdr{font-size:13px;font-weight:500;margin-bottom:8px;}
+.sec-count{display:inline-flex;align-items:center;justify-content:center;background:var(--surface3);color:var(--text3);border-radius:10px;font-family:var(--mono);font-size:10px;padding:1px 7px;margin-left:4px;}
 </style>
 </head>
 <body>
@@ -252,6 +276,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="view" id="view-chapters"></div>
     <div class="view" id="view-admin"></div>
     <div class="view" id="view-settings"></div>
+    <div class="view" id="view-knowledge"></div>
   </main>
 </div>
 
@@ -329,7 +354,7 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
 // Memory cache — all reads are sync from here; writes go async to Supabase
-const DB = { progress:{}, webhookConfig:{ groupWebhook:'', userOpenIds:{} } };
+const DB = { progress:{}, webhookConfig:{ groupWebhook:'', userOpenIds:{} }, chapterNotes:[] };
 
 function initChapters(username) {
   const arr = [];
@@ -338,10 +363,11 @@ function initChapters(username) {
 }
 
 async function loadAllData() {
-  const [{ data:progData }, { data:ciData }, { data:whData }] = await Promise.all([
+  const [{ data:progData }, { data:ciData }, { data:whData }, { data:notesData }] = await Promise.all([
     sb.from('chapter_progress').select('*'),
     sb.from('checkins').select('*'),
-    sb.from('webhook_config').select('*').eq('id',1).maybeSingle()
+    sb.from('webhook_config').select('*').eq('id',1).maybeSingle(),
+    sb.from('chapter_notes').select('*').order('created_at', { ascending: true })
   ]);
   for (const username of Object.keys(USERS).filter(u => !USERS[u].isAdmin)) {
     const prog = progData?.find(p => p.username === username);
@@ -358,6 +384,7 @@ async function loadAllData() {
     groupWebhook: whData?.group_webhook || '',
     userOpenIds:  whData?.user_open_ids  || {}
   };
+  DB.chapterNotes = notesData || [];
 }
 
 function getProgress(username) {
@@ -772,6 +799,7 @@ function switchView(view) {
   else if (view === 'chapters') renderChapters();
   else if (view === 'admin') renderAdmin();
   else if (view === 'settings') renderSettings();
+  else if (view === 'knowledge') renderKnowledge();
 }
 
 // ══════════════════════════════════════════════
@@ -792,7 +820,7 @@ function renderSidebar(username) {
 
   const navItems = u.isAdmin
     ? [{ v:'admin', icon:'👥', label:'所有人进度' }, { v:'settings', icon:'⚙️', label:'飞书通知配置' }]
-    : [{ v:'dashboard', icon:'📋', label:'今日仪表板' }, { v:'chapters', icon:'📚', label:'章节进度' }];
+    : [{ v:'dashboard', icon:'📋', label:'今日仪表板' }, { v:'chapters', icon:'📚', label:'章节进度' }, { v:'knowledge', icon:'📖', label:'知识库' }];
 
   document.getElementById('sb-nav').innerHTML = navItems.map(n =>
     `<div class="ni" data-view="${n.v}" onclick="switchView('${n.v}')"><span class="ni-icon">${n.icon}</span><span class="ni-label">${n.label}</span></div>`
@@ -1179,6 +1207,117 @@ function submitCheckin() {
   closeModal('modal-checkin');
   showToast('打卡成功！');
   renderDashboard();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER: KNOWLEDGE BASE
+// ══════════════════════════════════════════════
+const OFFICIAL_NOTES = {
+  1:null, 2:null, 3:null, 4:null, 5:null,
+  6:null, 7:null, 8:null, 9:null, 10:null,
+  11:null, 12:null, 13:null, 14:null, 15:null,
+  16:null, 17:null, 18:null, 19:null, 20:null
+};
+
+let kbChapter = 1, kbFilter = 'all';
+
+async function saveChapterNote(chapterNum, content, isPublic) {
+  const { data, error } = await sb.from('chapter_notes').insert({
+    chapter_num: chapterNum,
+    username: currentUser,
+    content,
+    is_public: isPublic,
+    created_at: new Date().toISOString()
+  }).select().single();
+  if (!error && data) DB.chapterNotes.push(data);
+  return !error;
+}
+
+function renderKnowledge() {
+  const chapNotes = DB.chapterNotes.filter(n => {
+    if (n.chapter_num !== kbChapter) return false;
+    if (kbFilter === 'mine') return n.username === currentUser;
+    return n.is_public || n.username === currentUser;
+  });
+
+  const pills = Array.from({length: TOTAL_CHAPTERS}, (_, i) => {
+    const n = i + 1;
+    return `<div class="ch-pill ${n === kbChapter ? 'active' : ''}" onclick="setKbChapter(${n})">第${n}章</div>`;
+  }).join('');
+
+  const officialNote = OFFICIAL_NOTES[kbChapter];
+  const officialSection = `<div class="official-box">
+    <div class="official-label">📋 官方精读</div>
+    <div class="official-body">${officialNote ? esc(officialNote) : '<span style="color:var(--text3);font-style:italic;">本章官方精读内容尚未录入，敬请期待。</span>'}</div>
+  </div>`;
+
+  const noteCards = chapNotes.length === 0
+    ? '<div class="empty-state">暂无笔记，成为第一个分享学习心得的人吧！</div>'
+    : chapNotes.map(n => {
+        const author = USERS[n.username]?.name || n.username;
+        const isOwn = n.username === currentUser;
+        const dt = new Date(n.created_at);
+        const dtStr = `${dt.getMonth()+1}月${dt.getDate()}日`;
+        return `<div class="note-card">
+          <div class="note-meta">
+            <span class="note-author">${esc(author)}</span>
+            <div class="note-badges">
+              ${!n.is_public && isOwn ? '<span class="badge badge-amber">🔒 私密</span>' : '<span class="badge badge-green">公开</span>'}
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${dtStr}</span>
+            </div>
+          </div>
+          <div class="note-body">${esc(n.content)}</div>
+        </div>`;
+      }).join('');
+
+  const addForm = `<div class="note-add-form">
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;">添加笔记</div>
+    <textarea class="form-textarea" id="kb-note-input" style="min-height:80px;" placeholder="分享你对第 ${kbChapter} 章的学习笔记、重点或心得…"></textarea>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+      <label class="privacy-toggle">
+        <input type="checkbox" id="kb-note-public" checked>
+        <span style="font-size:12px;color:var(--text2);">公开（所有人可见）</span>
+      </label>
+      <button class="btn btn-primary" style="padding:7px 16px;" onclick="submitNote()">发布笔记</button>
+    </div>
+  </div>`;
+
+  document.getElementById('view-knowledge').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">知识库</div>
+      <div class="page-sub">官方精读 + 学员笔记 · 共 ${TOTAL_CHAPTERS} 章</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="section-hdr">选择章节</div>
+      <div class="ch-pills">${pills}</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">${officialSection}</div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="section-hdr" style="margin-bottom:0;">学员笔记 <span class="sec-count">${chapNotes.length}</span></div>
+        <div class="filter-pills">
+          <div class="filter-pill ${kbFilter==='all'?'active':''}" onclick="setKbFilter('all')">全部公开</div>
+          <div class="filter-pill ${kbFilter==='mine'?'active':''}" onclick="setKbFilter('mine')">只看我的</div>
+        </div>
+      </div>
+      ${noteCards}
+      ${addForm}
+    </div>`;
+}
+
+function setKbChapter(n) { kbChapter = n; renderKnowledge(); }
+function setKbFilter(f) { kbFilter = f; renderKnowledge(); }
+
+async function submitNote() {
+  const content = document.getElementById('kb-note-input').value.trim();
+  if (!content) { showToast('请填写笔记内容'); return; }
+  if (content.length < 5) { showToast('笔记内容太简短'); return; }
+  const isPublic = document.getElementById('kb-note-public').checked;
+  const btn = document.querySelector('#view-knowledge .btn-primary');
+  if (btn) btn.disabled = true;
+  const ok = await saveChapterNote(kbChapter, content, isPublic);
+  if (ok) { showToast('笔记已发布 ✓'); renderKnowledge(); }
+  else { showToast('发布失败，请重试'); if (btn) btn.disabled = false; }
 }
 
 // ══════════════════════════════════════════════

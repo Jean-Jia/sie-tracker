@@ -26,6 +26,12 @@ USERS = {
     'jeremyzhang':  {'name':'Jeremy Zhang',  'startChapter':0,  'examDate':date(2026,6,15), 'weeklyHours':9,    'studyStart':date(2026,4,30)},
 }
 
+OFFICIAL_NOTES = {i: None for i in range(1, 21)}
+
+def get_todays_chapter():
+    delta = (TODAY - TRACKING_START).days
+    return (delta % TOTAL_CHAPTERS) + 1
+
 QUOTES = [
     "The secret of getting ahead is getting started.",
     "不是因为有希望才坚持，而是坚持了才会有希望。",
@@ -295,6 +301,22 @@ def main():
         if at_risk or off_track:
             lines.append('💡 落后的同学加油，考试不等人！')
         card = build_card(f'📊 SIE考牌项目 · 本周进度播报 · {today_str}', 'green', '\n'.join(lines), '📎 打开备考工具 →', SITE_URL)
+        send_feishu(webhook_url, card)
+
+    # ── Chapter study push ──
+    elif ntype == 'chapter-study':
+        ch = get_todays_chapter()
+        note = OFFICIAL_NOTES.get(ch)
+        note_section = f'\n\n**📋 本章精读**\n{note}' if note else '\n\n📋 本章精读内容即将更新，敬请期待。'
+        content = (
+            f'<at id=all></at>\n\n'
+            f'📖 **今日学习重点 · 第 {ch} 章**\n'
+            f'━━━━━━━━━━━━━━━'
+            f'{note_section}\n\n'
+            f'━━━━━━━━━━━━━━━\n'
+            f'💡 学完记得打卡，知识库里也可以添加你的笔记！'
+        )
+        card = build_card(f'📖 今日学习重点 · 第 {ch} 章', 'blue', content, '📎 打开知识库 →', SITE_URL)
         send_feishu(webhook_url, card)
 
     # ── Behind alert ──

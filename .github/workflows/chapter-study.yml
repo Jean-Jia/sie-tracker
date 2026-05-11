@@ -1,0 +1,15 @@
+name: Chapter Study Push
+
+on:
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python .github/scripts/notify.py chapter-study ${{ secrets.SUPABASE_ANON_KEY }}
