@@ -2,7 +2,7 @@ name: Daily Notes Push
 
 on:
   schedule:
-    - cron: '0 2 * * *'   # 10:00 Malaysia (UTC+8)
+    - cron: '0 2 * * 1-5'   # 10:00 Malaysia (UTC+8), weekdays only
   workflow_dispatch:
     inputs:
       chapter:

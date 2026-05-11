@@ -12,7 +12,7 @@ from datetime import date, timedelta
 SUPABASE_URL   = 'https://cupdvksfzqpjedibajus.supabase.co'
 SUPABASE_KEY   = sys.argv[2] if len(sys.argv) > 2 else ''
 SITE_URL       = 'https://jean-jia.github.io/sie-tracker/'
-TRACKING_START = date(2026, 5, 8)
+TRACKING_START = date(2026, 5, 11)
 TOTAL_CHAPTERS = 20
 TODAY          = date.today()
 DRY_RUN        = '--dry-run' in sys.argv
@@ -1041,8 +1041,14 @@ def get_todays_chapter():
     for arg in sys.argv:
         if arg.startswith('--chapter='):
             return int(arg.split('=')[1])
-    delta = (TODAY - TRACKING_START).days
-    return (delta % TOTAL_CHAPTERS) + 1
+    # Count weekdays (Mon-Fri) from TRACKING_START up to and including TODAY
+    weekdays = 0
+    cursor = TRACKING_START
+    while cursor <= TODAY:
+        if cursor.weekday() < 5:
+            weekdays += 1
+        cursor += timedelta(days=1)
+    return ((weekdays - 1) % TOTAL_CHAPTERS) + 1
 
 def extract_quick_notes(text):
     """Return only the 速记 bullet lines from a chapter's OFFICIAL_NOTES entry."""
