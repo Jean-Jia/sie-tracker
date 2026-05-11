@@ -1213,10 +1213,364 @@ function submitCheckin() {
 //  RENDER: KNOWLEDGE BASE
 // ══════════════════════════════════════════════
 const OFFICIAL_NOTES = {
-  1:null, 2:null, 3:null, 4:null, 5:null,
-  6:null, 7:null, 8:null, 9:null, 10:null,
-  11:null, 12:null, 13:null, 14:null, 15:null,
-  16:null, 17:null, 18:null, 19:null, 20:null
+  1: `Chapter 1 – Overview of Market Participants and Market Structure
+
+• Broker-dealer functions: investment bankers (primary market) vs. market makers (secondary market)
+• Broker vs. dealer: agent acting on behalf of client vs. principal trading for own account
+• Types of investors: institutional, accredited, qualified institutional buyer (QIB), individual
+• Primary market (new issuances) vs. secondary market (existing securities trading)
+• Market platforms: physical (NYSE) vs. electronic (NASDAQ); NMS securities vs. OTC equities
+• Third Market (exchange-listed securities traded OTC) and Fourth Market (institution-to-institution)
+• Transaction process: order → execution → clearance → settlement → custody
+• DTCC role: central hub for electronic clearing, settlement, and custody of securities
+• Clearing firms vs. introducing firms: clearing firms handle back-office operations; introducing firms handle client relationships`,
+
+  2: `Chapter 2 – Overview of Regulation
+
+• SEC: primary federal regulator; NASAA: state-level regulation (Blue Sky laws)
+• FRB ("the Fed"): controls monetary policy and margin requirements
+• FDIC: insures bank deposits (not securities)
+• Securities Act of 1933: governs new issuances (primary market); requires registration & prospectus
+• Securities Exchange Act of 1934: governs secondary market trading; created the SEC
+• Investment Company Act of 1940: regulates mutual funds and investment companies
+• Investment Advisers Act of 1940: regulates investment advisers
+• SIPC (1970): protects customers if broker-dealer fails; covers up to $500K ($250K cash)
+• FINRA: largest SRO; Code of Conduct (ethics) and Code of Arbitration (dispute resolution)
+• MSRB: regulates municipal securities dealers; does NOT have enforcement authority
+• WSP (Written Supervisory Procedures): each firm must maintain a supervisory procedures manual`,
+
+  3: `Chapter 3 – Equity Securities
+
+• Common stock: growth-oriented; highest risk in bankruptcy; voting rights (board, mergers — NOT dividends)
+• Statutory voting: one share = one vote per seat; Cumulative voting: concentrate votes on one candidate
+• Treasury shares: repurchased by corporation; no voting rights, no dividends, not outstanding
+• Restricted stock vs. control stock: restricted = unregistered shares with Rule 144 holding period; control = held by insiders
+• Preferred stock: income-oriented; interest rate risk; no voting rights; receives dividends before common
+• Cumulative preferred: unpaid dividends accumulate (arrears) and must be paid before common dividends
+• Convertible preferred: more price stability during interest rate fluctuations due to conversion feature
+• Rights: short-term (30–45 days), below-market subscription price; Warrants: long-term, above-market price
+• ADRs (American Depositary Receipts): allow U.S. investors to buy foreign stocks in U.S. dollars
+  – Sponsored ADRs trade on exchanges; unsponsored ADRs trade OTC
+  – Risks: market risk + currency risk`,
+
+  4: `Chapter 4 – Introduction to Debt Instruments
+
+• Key terms: par value ($1,000), coupon/nominal yield, current yield, YTM, YTC, dated date, accrued interest
+• Accrued interest: corporate/municipal bonds use 30-day months / 360-day year; gov't bonds use actual days / 365-day year
+• Serial bonds: mature in installments over time; Term bonds: all mature on same date
+• Interest rate risk: bond prices fall when interest rates rise (inverse relationship)
+• Credit risk: risk that issuer defaults; reflected in bond ratings (Moody's, S&P, Fitch)
+• Investment grade: Baa/BBB and above; High yield/junk: Ba/BB and below
+• Bond trading units: corporate bonds in 1/8 of a point; gov't bonds in 1/32 of a point
+• Call provision: issuer right to redeem bonds early; Call protection: period during which bonds cannot be called
+• Call premium: amount above par paid to bondholders when called early
+• Put provision: bondholder right to sell bonds back to issuer at par
+• Convertible bonds: can be converted to common stock at a set conversion ratio; tax-free conversion`,
+
+  5: `Chapter 5 – Types of Debt Instruments
+
+• U.S. government direct obligations: T-Bills (discount, <1 yr), T-Notes (2–10 yr), T-Bonds (>10 yr), TIPS (inflation-adjusted)
+• Treasury auction market: competitive vs. non-competitive bids
+• Agency securities: GNMA (gov't backed), FNMA & FHLMC (gov't sponsored), FFCB, FHLB
+• Mortgage-backed securities (MBS): pool of mortgages; prepayment risk = risk of early payoff when rates fall
+• Municipal bonds — two types:
+  – GO (General Obligation): backed by taxing power; voter approval required
+  – Revenue bonds: backed by project revenue (toll roads, airports, utilities)
+• Municipal notes: BAN, RAN, TAN — short-term financing
+• Municipal ARS and VRDOs: variable-rate instruments
+• Corporate bonds: secured (mortgage bonds, equipment trust certificates) vs. unsecured (debentures, income bonds)
+• Eurodollar bonds, Yankee bonds, Eurobonds: international bond distinctions
+• Tax implications: U.S. gov't interest = federal taxable, state exempt; Municipal interest = federal exempt, may be state exempt`,
+
+  6: `Chapter 6 – Investment Returns
+
+• Ex-dividend date: stock trades without dividend; set by exchanges (T+1 before record date)
+• Stock price drops by dividend amount on ex-dividend date; stock dividends are generally not taxable when received
+• Bond coupon rate: fixed semi-annual interest payments based on par value
+• Bond price / yield relationship: prices and yields move inversely
+  – Rates rise → bond prices fall; Rates fall → bond prices rise
+• Yield relationships: Nominal yield (coupon) / Current yield / YTM / YTC
+  – Discount bond: nominal < current < YTM; Premium bond: nominal > current > YTM
+• Basis points: 1 basis point = 0.01%; 100 basis points = 1%
+• Cost basis: original purchase price; used to calculate capital gains/losses
+• Total return = income (dividends/interest) + capital gain/loss
+• Current yield = annual income ÷ current market price
+• Narrow-based index (e.g., DJIA): tracks select stocks; Broad-based index (e.g., S&P 500): tracks large market segment
+• DJIA: price-weighted, 30 stocks; S&P 500: market cap-weighted, 500 stocks`,
+
+  7: `Chapter 7 – Packaged Products (Mutual Funds)
+
+• Three types of investment companies: management companies (open/closed-end), UITs, face amount certificate companies
+• Open-end funds (mutual funds): continuously issue/redeem shares at NAV; no secondary market trading
+• Registration and prospectus requirements: must file with SEC; provide statutory or summary prospectus
+• Key service providers: BOD, investment adviser, custodian bank, transfer agent, underwriter, dealers
+• Major fund categories: money market, bond, equity, balanced, index, sector funds
+• Pricing: NAV = (assets – liabilities) ÷ shares outstanding; POP = NAV ÷ (1 – sales charge %)
+• Forward pricing: orders priced at next calculated NAV after order receipt
+• Sales charges and share classes:
+  – Class A: front-end load (breakpoints available); Class B: back-end load (CDSC); Class C: level load (12b-1)
+• 12b-1 fees: ongoing fees for distribution and marketing (max 1% annually)
+• Sales charge reductions: breakpoints, letters of intent (13 months), rights of accumulation
+• Sales practice violations: breakpoint sales, large Class B purchases, unsuitable switching
+• Dollar cost averaging: invest fixed dollar amount regularly; buys more shares at lower prices
+• Closed-end funds: fixed shares; trade on exchanges like stock; may trade at premium or discount to NAV`,
+
+  8: `Chapter 8 – Variable Contracts and Municipal Fund Securities
+
+• Fixed annuity: guaranteed rate of return; held in insurer's general account
+• Variable annuity: return varies with subaccount performance; held in separate account (registered with SEC)
+• Separate account subaccounts: similar to mutual funds; subject to Investment Company Act of 1940
+• Accumulation phase: contributions made, earnings tax-deferred; Annuity phase: periodic payments begin
+• Withdrawals: taxed as ordinary income on gains (LIFO); 10% penalty if under 59½
+• Payout options: life only, life with period certain, joint and survivor, lump sum
+• Death benefit during accumulation: greater of account value or total premiums paid
+• Charges: mortality & expense (M&E) risk charge, surrender charges, administrative fees
+• Qualified annuity: funded with pre-tax dollars (e.g., in 401k); Non-qualified: funded with after-tax dollars
+• Cost basis in non-qualified annuity: amount of after-tax contributions
+• 1035 Exchange: tax-free exchange of one annuity/life policy for another
+• Equity-indexed annuity: return linked to stock index; principal protection; not a security
+• 529 plans: state-sponsored education savings; tax-free growth for qualified education expenses
+• 529 ABLE plans: for individuals with disabilities; tax-free growth for disability expenses
+• SECURE Act changes: 529 funds can roll into Roth IRA (lifetime max $35K)`,
+
+  9: `Chapter 9 – Alternative Investments
+
+• ETFs: investment companies but NOT mutual funds; passively managed (track an index); trade on exchanges like stocks
+• Inverse ETF: moves opposite to its benchmark; Leveraged ETF: amplifies benchmark returns (2x, 3x)
+• Leveraged inverse ETF: both amplified AND inverse
+• ETNs (Exchange-Traded Notes): unsecured debt obligations of issuing bank; credit risk of the issuer is key
+• Inverse ETN and Leveraged ETN also exist
+• Hedge funds: private, largely unregulated; for accredited investors; use various strategies (long/short, leverage)
+• REITs (Real Estate Investment Trusts): invest in real estate; must distribute 90% of income; taxed as corporations
+  – Types: Equity REIT (owns properties), Mortgage REIT (holds mortgages), Hybrid REIT (both)
+  – Investors taxed on dividends as ordinary income
+• DPPs (Direct Participation Programs): flow-through investment vehicles; pass income/losses directly to investors
+  – Forms: real estate, oil & gas, equipment leasing
+• Limited partnerships: general partner (manages, unlimited liability) + limited partners (passive, limited liability)
+• LP liquidation priority: secured creditors → unsecured creditors → limited partners → general partner`,
+
+  10: `Chapter 10 – Options
+
+• Option: contract giving buyer the right (not obligation) to buy or sell underlying at a set price by expiration
+• Call option: right to buy; Put option: right to sell; both have buyers and sellers (writers)
+• Option premium = Intrinsic Value + Time Value
+  – Intrinsic value: in-the-money amount; Time value: remaining premium above intrinsic value
+• In-the-money (ITM): call when market > strike; put when market < strike
+• At-the-money (ATM): market = strike; Out-of-the-money (OTM): no intrinsic value
+• Strategies: Long call / Short put = Bullish; Short call / Long put = Bearish
+• Breakeven: call = strike + premium; put = strike − premium
+• Maximum gain: long call = unlimited; long put = strike − premium; short call = premium received; short put = premium received
+• Maximum loss: long call = premium paid; long put = premium paid; short call = unlimited; short put = strike − premium
+• Covered call: writer owns the underlying stock (hedged); Uncovered/naked call: writer does not own stock
+• Hedge: buying puts to protect a long stock position
+• Option events: liquidation (close), exercise (buy/sell underlying), expiration (option expires worthless)
+• OCC (Options Clearing Corporation): acts as counterparty to every option trade; guarantees performance
+• Equity options: exercise = physical delivery of 100 shares; Index options: exercise = cash settlement`,
+
+  11: `Chapter 11 – Offerings
+
+• Public offering: registered with SEC; sold to general public; IPO = first public sale of a company's stock
+• Private placement: sold to accredited investors; exempt from full registration
+• Split (combined) offering: includes both new shares (primary) and existing shares (secondary)
+• Underwriter/investment banker: manages the offering; Syndicate members: help distribute; Selling group: dealers who sell
+• Underwriting types: Firm commitment (underwriter buys all), Best efforts (no guarantee), All-or-none, Mini-maxi, Stand-by
+• Market out clause: allows underwriter to cancel if market conditions change significantly
+• Shelf registration (Rule 415): allows issuer to register securities for sale over 2-year period
+• POP = price at which securities are offered to the public; Underwriting spread = gross spread (profit for underwriters)
+• Registration process: file S-1 with SEC → cooling-off period → effective date
+• Prospectus types: Preliminary/Red Herring (no price), Statutory (final), Summary prospectus, Free writing prospectus
+• Exempt securities: U.S. gov't, municipal bonds, non-profit organizations, commercial paper (<270 days)
+• Accredited investor: net worth >$1M (excl. primary home) OR income >$200K/$300K (joint) for last 2 years
+• Rule 144: allows resale of restricted/control stock with volume limits and holding period requirements
+• Rule 144A: allows resale of restricted securities to QIBs without SEC registration
+• Rule 145: business combinations (mergers, reclassifications); Rule 147/147A: intrastate offerings
+• QIB: institutions with >$100M in securities; PIPE: private investment in public equity
+• Municipal offerings: official statement = disclosure document; legal opinion = confirms tax-exempt status
+• EMMA (Electronic Municipal Market Access): MSRB's public disclosure system for municipal bond information`,
+
+  12: `Chapter 12 – Orders and Trading Strategies
+
+• Broker (agent): executes trades on behalf of client; earns commission
+• Dealer (principal): trades for own account; earns markup (buy from client) or markdown (sell to client)
+• 5% policy: FINRA guideline for reasonable markups/markdowns/commissions; not a strict rule
+• Factors affecting 5% policy: type of security, price, transaction size, services provided
+• Proceeds transaction: customer sells one security and uses proceeds to buy another; entire transaction considered
+• Transaction types: purchase (buy), long sale (sell securities you own), short sale (sell borrowed securities)
+• Short sale: sell borrowed shares hoping price falls; must be bought back (covered) later
+• Covered writer: option seller owns the underlying security; Uncovered/naked writer: does not own it
+• Order types:
+  – Market order: execute immediately at best available price
+  – Limit order: execute only at specified price or better (buy at or below; sell at or above)
+  – Stop order: becomes market order when stop price is reached (buy stop above market; sell stop below market)
+  – Stop-limit order: becomes limit order (not market order) when stop price is triggered
+• Day order: expires at end of trading day; GTC (Good 'Til Cancelled): remains until executed or cancelled
+• Market maker quote: includes bid (buy) price and ask (sell) price, plus size (number of shares)
+• Cash account: must pay in full by settlement; Margin account: may borrow up to 50% (Reg T initial requirement)`,
+
+  13: `Chapter 13 – Settlement and Corporate Actions
+
+• Regular-way settlement dates:
+  – Corporate and municipal securities: T+1 (trade date plus 1 business day)
+  – U.S. government securities and options: T+1
+• Reg T payment date: T+2 for cash accounts; margin accounts must meet by T+2
+• Failure to pay by Reg T date: securities are sold out; account frozen for 90 days
+• Cash settlement: same-day settlement; must be agreed upon by both parties
+• Good delivery: securities must be in proper form (correct denomination, properly endorsed)
+• Stock power: separate form that allows transfer of securities without endorsing the certificate
+• Tender offer: offer to buy shares from shareholders at a premium; can be by company or third party
+  – Oversubscribed: shares prorated; Undersubscribed: fewer than needed shares tendered
+• Forward stock split (e.g., 2-for-1): more shares at lower price; total value unchanged
+  – 2-for-1: double shares, half price; cost basis per share is halved
+• Reverse stock split: fewer shares at higher price (e.g., 1-for-2)
+• Stock splits: not taxable events; cost basis per share is adjusted proportionally`,
+
+  14: `Chapter 14 – Customer Accounts
+
+• Cash account: customer pays full amount by settlement; no borrowing
+• Margin account: customer borrows up to 50% of purchase price (Reg T); minimum equity $2,000
+• Margin account disclosures: must provide margin disclosure document; customer must sign margin agreement
+• Discretionary account: rep can make trades without prior client approval each time
+  – Full power of attorney: complete control; Limited power of attorney: specified transactions only
+• Not-held order: customer gives rep time and/or price discretion (not considered discretionary account)
+• Fee-based account: flat fee regardless of trading activity; Commission-based: charged per transaction
+• Coverdell ESA: education savings; $2,000/year contribution limit; tax-free for qualified education expenses
+• Standard account opening: new account form requires name, address, DOB, SSN, employment, financial info
+• Joint accounts: JTWROS (right of survivorship) or TIC (tenants in common — estate gets share)
+• Custodial accounts (UGMA/UTMA): minor is beneficial owner; custodian manages until age of majority
+• Retirement accounts comparison:
+  – Traditional IRA: pre-tax contributions (if deductible), tax-deferred growth, RMDs at age 73
+  – Roth IRA: after-tax contributions, tax-free growth, no RMDs
+  – 401(k) / 403(b): employer-sponsored, pre-tax, tax-deferred, RMDs apply
+  – SEP IRA / SIMPLE IRA: for self-employed and small businesses
+• ERISA: federal law governing private employer retirement plans (eligibility, vesting, fiduciary duties)`,
+
+  15: `Chapter 15 – Compliance Considerations
+
+• New account requirements: name, address, DOB, SSN, employment, financial situation, investment objectives
+• Trusted contact person: should be requested (NOT required); used if firm suspects financial exploitation
+• FINRA's three suitability obligations:
+  1. Reasonable Basis: product must be suitable for at least some investors
+  2. Customer-Specific: product must be suitable for this particular customer
+  3. Quantitative: trading frequency must not be excessive (anti-churning)
+• Bank Secrecy Act / USA PATRIOT Act: require AML programs at all broker-dealers
+• Three stages of money laundering: Placement (introduce cash) → Layering (disguise) → Integration (use funds)
+• FinCEN reports:
+  – Currency Transaction Report (CTR): cash transactions >$10,000
+  – Suspicious Activity Report (SAR): suspicious transactions >$5,000; do NOT tell the customer
+• Regulation S-P: requires firms to protect customers' non-public personal information (privacy notice)
+• Customer communications categories:
+  1. Correspondence: to ≤25 retail investors; 2. Retail Communication: to >25 retail investors; 3. Institutional Communication
+• Telephone Consumer Protection Act (1991): restricts telemarketing and automated calls
+• Business Continuity Plan (BCP): required for all member firms; addresses emergencies/disasters
+• Recordkeeping requirements:
+  – Lifetime: corporate/partnership documents
+  – 6 years: blotters, account statements, new account forms, municipal complaints
+  – 3 years: trade tickets, confirmations, employee records, all communications`,
+
+  16: `Chapter 16 – Prohibited Activities
+
+• Securities Exchange Act of 1934: prohibits all manipulative and deceptive trading practices
+• Regulation M: prohibits manipulation of security prices during a distribution (new offering period)
+• Prohibited activities:
+  – Spreading false rumors to influence prices
+  – Front-running: trading ahead of a large customer order to profit from anticipated price movement
+  – Trading ahead of a research report
+  – Marking the close/open: placing trades near close or open to influence prices
+  – Churning: excessive trading to generate commissions (violates quantitative suitability)
+  – Reverse churning: excessive inactivity in a fee-based account
+• Prohibited trading practices:
+  – Making payments to influence market price
+  – Interpositioning: adding an unnecessary intermediary to increase markups
+  – Insider trading: trading on material, non-public information
+  – Quoting same security at different prices in different mediums
+• Freeriding: buying and selling securities before paying for them (violates Reg T)
+• FINRA New Issue (IPO) Rule: certain "restricted persons" cannot buy IPOs at POP
+  – Restricted: broker-dealer employees, FINRA-associated persons, their immediate family
+• Sharing in customer accounts: only allowed if written consent and proportional to investment
+• Borrowing from or lending to clients: prohibited except in specific circumstances
+• Financial exploitation: firms can put a temporary hold on suspicious transactions involving senior/specified adults
+• Employees of one firm opening accounts at another firm: must notify both firms`,
+
+  17: `Chapter 17 – SRO Requirements for Associated Persons
+
+• SIE Exam: entry-level exam; does NOT grant any registration rights; must pass a top-off exam (Series 6, 7, etc.)
+• Associated person: anyone employed by or associated with a FINRA member firm
+• Non-registered persons: may perform clerical/administrative tasks only; cannot interact with public on securities business; no securities-based compensation
+• Registered representative (RR): must pass qualification exams, maintain registration, complete CE
+• Supervising principal: responsible for supervising RRs' activities
+• Exam confidentiality: candidates cannot share exam content
+• Form U4 (Uniform Application for Securities Industry Registration): required for all registered persons; filed through CRD
+• CRD (Central Registration Depository): FINRA system that tracks registrations and disciplinary history
+• Statutory disqualification: certain criminal convictions, regulatory sanctions, or court injunctions bar registration
+• Eligibility proceeding: firm can request FINRA allow a disqualified person to associate under heightened supervision
+• Fingerprinting: required for registered persons and certain non-registered persons
+• FINRA vs. Blue Sky (state) registration: must meet both federal (FINRA) and state requirements
+• Continuing Education (CE) requirements:
+  – Regulatory Element: required FINRA computer-based training annually for all registered persons
+  – Firm Element: firm-specific training developed and delivered by each member firm
+• Special Inactive Status: given to registered persons on active military duty; maintains registration without CE`,
+
+  18: `Chapter 18 – Employee Conduct and Reportable Events
+
+• Form U4 contents: personal info (name, address, employment history), disclosure questions (criminal, regulatory, financial events), arbitration provisions
+• Form U5: termination notice; must be filed within 30 days of termination; reason for departure disclosed
+• Form U6: filed by regulators or firms to report disciplinary actions against an individual
+• BrokerCheck: FINRA's public database showing registration history, exam results, and disciplinary history
+  – Available for 10 years after termination for most disclosure events
+• Investor education: FINRA and MSRB both have investor education requirements and resources
+• Customer complaints: must be recorded and reported; FINRA requires quarterly reports; records kept 4 years at OSJ
+• FINRA notification required for: certain criminal charges/convictions, regulatory actions, civil judicial actions, financial events (bankruptcy, liens >$2,500), customer complaints >$15,000
+• Outside business activities (OBA): must be disclosed to and approved by employing firm via written notice
+• Private securities transactions (Selling Away): selling securities not offered through employing firm; requires prior written approval
+• Gifts: cannot give or receive gifts >$100/year per person from anyone connected with the securities business
+• Training and educational seminars: permitted but cannot be lavish or primarily entertainment
+• Political contributions (MSRB Pay-to-Play Rule): RRs cannot make contributions >$250 to officials who can influence municipal securities business`,
+
+  19: `Chapter 19 – Economic Factors
+
+• GNP (Gross National Product): value of goods/services produced by a country's residents, regardless of location
+• GDP (Gross Domestic Product): value of all goods/services produced within a country's borders
+• Inflation: rising price levels; measured by CPI (Consumer Price Index)
+• Deflation: falling price levels; stagflation = inflation + recession simultaneously
+• Real interest rate = nominal rate − inflation rate
+• Business cycle phases: Expansion → Peak → Contraction/Recession → Trough (Recovery)
+  – Recession: two consecutive quarters of declining GDP
+  – Cyclical industries benefit in expansion; defensive industries hold steady in recession
+• Economic indicators: Leading (predict future: stock prices, building permits), Coincident (current: GDP, employment), Lagging (confirm past: CPI, unemployment rate)
+• Key interest rates: Prime rate (bank loans to best customers), Discount rate (Fed charges banks), Fed Funds rate (bank-to-bank overnight), Broker Call rate (banks charge broker-dealers for margin loans)
+• Keynesian economics: government spending stimulates the economy
+• Monetary policy: FRB controls money supply and interest rates
+• Yield curves: Normal (upward slope), Inverted (downward = recession signal), Flat (transition)
+• FRB tools: Open market operations (buy/sell Treasuries), Discount rate, Reserve requirements
+  – Buying Treasuries → increases money supply → lowers rates; Selling → decreases money supply → raises rates
+• Balance of payments: tracks all financial transactions between a country and the rest of the world
+• Balance sheet: assets = liabilities + equity; snapshot of financial position at a point in time
+• Income statement: revenues − expenses = net income; shows profitability over a period`,
+
+  20: `Chapter 20 – Investment Risks
+
+• Systematic risk (non-diversifiable): affects the entire market; cannot be eliminated through diversification
+  – Market risk: risk of overall market decline (affects all equity securities)
+  – Interest rate risk: bond prices fall when rates rise (affects all fixed income securities)
+  – Inflation risk (purchasing power risk): return may not keep pace with inflation
+  – Event risk: unexpected events (natural disasters, political events)
+• Non-systematic risk (diversifiable): specific to one company or industry; can be reduced through diversification
+  – Business risk: risk of company failing or performing poorly
+  – Regulatory/legislative risk: new laws affect a company or industry
+  – Capital risk: risk of losing invested principal
+  – Liquidity risk: difficulty selling an investment quickly at fair price
+  – Currency risk: foreign investments affected by exchange rate changes
+  – Political risk: foreign investments affected by political instability
+  – Credit risk: issuer may default (relevant to bonds/debt instruments)
+  – Prepayment risk: mortgages/bonds may be paid off early when rates fall (MBS)
+• Alpha: measures excess return above/below benchmark (manager's skill); Beta: measures sensitivity to market moves
+  – Beta >1: more volatile than market; Beta <1: less volatile; Beta =1: moves with market
+• Duration: measure of interest rate risk for bonds; longer duration = greater price sensitivity to rate changes
+• Efficient Market Hypothesis (EMH): stock prices already reflect all available information; active management cannot consistently beat the market
+• Asset allocation strategies:
+  – Strategic (passive): long-term target allocation; buy-and-hold, indexing, portfolio rebalancing
+  – Tactical (active): short-term adjustments; sector rotation
+• Options as hedges: buying puts protects against downside in stock positions; buying calls hedges short positions`
 };
 
 let kbChapter = 1, kbFilter = 'all';
