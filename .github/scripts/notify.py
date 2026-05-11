@@ -28,265 +28,28 @@ USERS = {
 
 OFFICIAL_NOTES = {
     1: (
-        "**Ch.1 Market Participants & Structure**\n"
-        "• Broker-dealer roles: investment banker (primary mkt) vs market maker (secondary mkt)\n"
-        "• Broker = agent (earns commission); Dealer = principal (earns markup)\n"
-        "• Investor types: institutional / accredited / QIB / individual\n"
-        "• Primary mkt (new issues) vs Secondary mkt (existing securities)\n"
-        "• Market platforms: physical vs electronic; NMS vs OTC equities; Third & Fourth Market\n"
-        "• DTCC: handles clearing, settlement, and custody electronically\n"
-        "• Clearing firm (back-office) vs Introducing firm (client-facing)"
+        '【考试权重】\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n所在考纲：Section 1 – Knowledge of Capital Markets\n本节总题量：12题（含第 1、2、11、19 章）\n本章预计题量：约 2–3 题\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n\n══════════════════════════════════════\n一、什么是发行人（What\'s an Issuer?）\n══════════════════════════════════════\n\n📄 原文：\n"An issuer is any legal entity that issues and sells securities to raise capital. Issuers can raise capital by issuing both debt securities (i.e., bonds) and equity securities (i.e., stocks)."\n\n"Examples of issuers include the U.S. Treasury, foreign governments, state and local governments, corporations, and banks."\n\n【考点解析】\n发行人（Issuer）= 发行证券来筹集资金的法律实体\n\n▸ 两类证券：\n  ① 债务证券（Debt Securities）→ 债券（Bonds）\n     • 发行人向投资者借钱，承诺还本付息\n     • 投资者是"债权人"，不拥有公司\n  ② 权益证券（Equity Securities）→ 股票（Stocks）\n     • 投资者成为公司股东，持有所有权\n     • 风险更高，但潜在回报更高\n\n▸ 五类常见发行人（SIE 高频考点）：\n  ① U.S. Treasury（美国财政部）→ 发行国债（T-Bills / Notes / Bonds）\n  ② 外国政府（Foreign Governments）→ 发行主权债券\n  ③ 州及地方政府（State / Local Governments）→ 发行市政债券（Municipal Bonds）\n  ④ 企业（Corporations）→ 发行公司债券和股票\n  ⑤ 银行（Banks）→ 发行银行债券及股票\n\n⚠️ 考试提示：\n  "Primary market"（一级市场）= 发行人直接向投资者出售新证券的场所\n  发行人在一级市场募集资金；在二级市场（Secondary Market）交易时，发行人不再收取资金\n\n\n══════════════════════════════════════\n二、什么是券商（What\'s a Broker-Dealer?）\n══════════════════════════════════════\n\n📄 原文：\n"A broker-dealer (BD) is a firm that is in the business of buying and selling securities. A broker-dealer can act as either a broker (agent) or a dealer (principal)."\n\n"When acting as a broker, the firm acts as an agent on behalf of a customer and charges a commission for the service."\n\n"When acting as a dealer, the firm acts as a principal, buying securities for its own inventory or selling securities from its own inventory. In a principal transaction, the firm earns a markup (when selling to a customer) or markdown (when buying from a customer)."\n\n【考点解析】\n券商（Broker-Dealer / BD）= 从事证券买卖业务的公司\n\n▸ 双重角色核心区分（高频考点！）：\n\n  ① Broker（经纪人）= Agent（代理人）\n     • 代客户买卖，不持有自己的仓位\n     • 赚取：佣金（Commission）\n\n  ② Dealer（自营商）= Principal（主体 / 本金方）\n     • 用自己的账户（inventory）买卖\n     • 赚取：Markup（卖给客户时加价）或 Markdown（从客户买入时压价）\n\n▸ 券商五大内部部门：\n\n  ① Investment Banking（投资银行部）— IPO、债券发行、并购顾问\n  ② Research（研究部）— 买入 / 卖出 / 持有评级；与 IB 部有"信息墙"隔离\n  ③ Sales（销售部）— 注册代表（RRs）直接服务客户\n  ④ Trading（交易部）— 自营交易 + 客户委托交易\n  ⑤ Operations（运营部 / 后台）— 确认书、账单、转账、记录保存\n\n⚠️ BD 在同一笔交易中只能以 Broker 或 Dealer 身份之一出现\n\n\n══════════════════════════════════════\n三、什么是做市商（What\'s a Market Maker?）\n══════════════════════════════════════\n\n📄 原文：\n"A market maker is a broker-dealer that is required to display, and to regularly make, firm bids and offers on a particular security. Market makers help ensure liquidity in the market."\n\n"A two-sided quote includes both a bid price (the price the market maker will buy) and an ask price (the price the market maker will sell), as well as the size of the quote."\n\n"Example: Bid 17.05 × Ask 17.08 / Size 1,000 × 2,000"\n\n【考点解析】\n做市商（Market Maker）= 必须持续为特定证券提供双向报价的自营商\n\n▸ 双向报价（Two-Sided Quote）：\n  • Bid Price = 做市商买入价（较低）\n  • Ask / Offer Price = 做市商卖出价（较高）\n  • Spread（价差）= Ask − Bid = 做市商利润来源\n\n▸ 报价示例：Bid 17.05 / Ask 17.08 / Size 1,000 × 2,000\n  • 做市商愿意以 $17.05 买入最多 1,000 股\n  • 做市商愿意以 $17.08 卖出最多 2,000 股\n\n▸ 做市商 vs. 交易员：\n  • Market Maker：必须持续报价（义务）\n  • Trader：只执行交易，无持续报价义务\n\n\n══════════════════════════════════════\n四、什么是交易员（What\'s a Trader?）\n══════════════════════════════════════\n\n📄 原文：\n"A trader is a person that is employed by a broker-dealer to execute securities transactions. A trader does not have an obligation to post bids and offers as a market maker does. A trader may trade on behalf of the firm in its proprietary account or on behalf of its clients."\n\n【考点解析】\n交易员（Trader）= 券商雇用的、执行买卖交易的专业人员\n\n▸ 两类职责：\n  ① 自营交易（Proprietary Trading）：动用公司自有资金\n  ② 客户委托交易（Client Trading）：代表客户执行订单\n\n⚠️ 交易员 ≠ 做市商，两者的"报价义务"不同是常考区分点\n\n\n══════════════════════════════════════\n五、什么是投资顾问（What\'s an Investment Adviser?）\n══════════════════════════════════════\n\n📄 原文：\n"An investment adviser (IA) is any person or firm that: (1) provides advice about securities; (2) is in the business of providing such advice; and (3) receives compensation for the advice."\n\n"Investment advisers typically charge fees, often calculated as a percentage of assets under management (AUM)."\n\n"Investment adviser registration requirements based on AUM:\n• Less than $100 million → register with the state\n• Between $100 million and $110 million → may register with either the state or SEC\n• Greater than $110 million → must register with the SEC"\n\n【考点解析】\n投资顾问（IA）= 提供证券建议并收取费用的个人或机构\n\n▸ IA 认定的三要素（同时满足）：\n  ① 提供证券建议  ② 以此为业  ③ 收取报酬\n\n▸ IA 注册门槛（三档必背）：\n  • AUM < $1 亿 → 向各州注册\n  • AUM $1 亿–$1.1 亿 → 可向州或 SEC 注册\n  • AUM > $1.1 亿 → 必须向 SEC 注册（RIA）\n\n▸ IA vs. BD：IA 收费（Fee / % of AUM）；BD 收佣金（Commission）或利差（Markup）\n\n\n══════════════════════════════════════\n六、市政顾问（Municipal Advisors）\n══════════════════════════════════════\n\n📄 原文：\n"A municipal advisor is a firm or individual that provides advice to municipal entities on the structure, timing, and terms of municipal finance offerings."\n\n"Municipal advisors must register with the SEC and are regulated by the MSRB."\n\n【考点解析】\n市政顾问 = 为市政实体提供融资结构、时机及条款建议的专业顾问\n• 注册：向 SEC 注册\n• 监管：MSRB（制定规则但无执法权）\n\n\n══════════════════════════════════════\n七、投资者类型（Types of Investors）\n══════════════════════════════════════\n\n📄 原文（合格投资者）：\n"An accredited investor is an individual or entity that meets one of the following criteria:\n• Individual net worth (or joint net worth with spouse) exceeds $1 million, excluding the value of the primary residence; OR\n• Individual income in each of the two most recent years exceeded $200,000 (or $300,000 with spouse)."\n\n"Certain professional certifications and designations also qualify, including holders of Series 7, Series 65, Series 82, and CFP."\n\n📄 原文（QIB）：\n"A Qualified Institutional Buyer (QIB) must meet a three-part test:\n1. The entity must be an eligible entity type.\n2. The entity must be buying for its own account or for the account of another QIB.\n3. The entity must own and invest, on a discretionary basis, at least $100 million of non-affiliated securities."\n\n"Individuals CANNOT be QIBs, regardless of their wealth."\n\n【考点解析】\n▸ 四类投资者层级：\n\n  ① Retail Investors（零售投资者）\n     • 普通个人，资产有限，受到最多监管保护\n\n  ② Accredited Investors（合格投资者）（高频考点！）\n     • 净资产 > $100 万（不含主要住宅）\n     • 或：个人年收入 > $20 万 / 夫妻联合 > $30 万（近两年）\n     • 或：持有 CFP、Series 7、Series 65、Series 82 等认证\n     • 或：金融机构、公司董事 / 高管 / 普通合伙人\n\n  ③ Institutional Investors（机构投资者）\n     • 银行、保险公司、养老基金、捐赠基金、对冲基金\n     • FINRA 定义：总资产 ≥ $5,000 万\n\n  ④ QIBs（合格机构买家）（高频考点！）\n     三条件同时满足：\n     ① 符合资格的实体类型\n     ② 为自己或其他 QIB 账户购买\n     ③ 自主管理 ≥ $1 亿 的非关联发行人证券\n     ⚠️ 个人无论多有钱都不能成为 QIB！\n\n\n══════════════════════════════════════\n八、市场结构（Market Structure）\n══════════════════════════════════════\n\n📄 原文（一级 vs. 二级市场）：\n"In the primary market, issuers sell new securities to investors for the first time. The issuer receives the proceeds from the sale."\n\n"In the secondary market, investors buy and sell previously issued securities among themselves. The issuer does NOT receive proceeds."\n\n"The primary market is regulated by the Securities Act of 1933. The secondary market is regulated by the Securities Exchange Act of 1934."\n\n📄 原文（OTC 市场）：\n"The OTC equity markets have four tiers:\n• OTCQX Best Market: the highest tier\n• OTCQB Venture Market: early-stage companies\n• OTC Pink Open Market: least regulated; highest risk\n• OTC Expert Market (OTCID): restricted to professional traders"\n\n【考点解析】\n▸ 一级市场（Primary）vs. 二级市场（Secondary）：\n  • 一级：发行人 → 投资者，发行人收资金，受 1933 年证券法监管\n  • 二级：投资者 ↔ 投资者，发行人不收资金，受 1934 年证券交易法监管\n\n▸ 交易所市场：NYSE（物理 + 电子混合）、Nasdaq（纯电子）\n  • 上市证券 = NMS Securities\n\n▸ OTC 市场四层（高到低）：OTCQX > OTCQB > Pink > Expert\n\n⚠️ Nasdaq 是交易所，不是 OTC！\n⚠️ 债券主要在 OTC 市场交易，不在交易所\n\n\n══════════════════════════════════════\n九、其他交易执行方式（Other Execution Methods）\n══════════════════════════════════════\n\n📄 原文：\n"The third market consists of exchange-listed securities that are traded OTC, away from the exchanges. Third market trading can occur after regular market hours."\n\n"The fourth market consists of direct institution-to-institution trading using proprietary trading systems (PTSs). No broker-dealer intermediary is used."\n\n"Electronic Communications Networks (ECNs) are automated systems that electronically match buy and sell orders. ECNs act as agents only, allow after-hours trading, and charge fees per transaction."\n\n"Dark pools are private trading platforms that do not display publicly available quotes. They are used for large block orders and provide anonymity."\n\n【考点解析】\n▸ 第三市场：交易所上市证券在场外（OTC）交易；可盘前盘后交易\n▸ 第四市场：机构直接互相交易，无中间商，用专有交易系统（PTSs）\n▸ ECN：自动撮合 + 仅代理（Agent Only）+ 允许盘后交易 + 收手续费\n▸ 暗池：不公开报价 + 大宗交易 + 机构 / HFT 参与 + 交易后才报告 + 匿名\n\n⚠️ ECN = Agent Only（不是主体）\n⚠️ 第三市场（有券商）vs. 第四市场（无中间商）\n\n\n══════════════════════════════════════\n十、清算与结算体系（Clearing and Settlement）\n══════════════════════════════════════\n\n📄 原文：\n"The DTCC is the central clearinghouse for U.S. financial markets, processing clearing and settlement of equities, bonds, MBS, money market instruments, and OTC derivatives. It is a non-profit, industry-owned organization regulated by the SEC."\n\n"DTCC subsidiaries:\n• NSCC: clears equity trades\n• FICC: clears bond and fixed income trades"\n\n"Clearing firms are full-service broker-dealers that execute, clear, and settle trades, interfacing directly with DTCC."\n\n"Introducing firms contract out clearing to clearing firms. Customer assets are held at the clearing firm."\n\n"Two clearing arrangements:\n• Fully disclosed: clearing firm knows each individual customer; sends statements/confirms directly\n• Omnibus: clearing firm sees only one account; introducing firm handles recordkeeping"\n\n【考点解析】\n▸ DTCC：非营利、行业自有、受 SEC 监管、美联储系统成员\n  • NSCC → 清算股票；FICC → 清算债券\n\n▸ 清算公司 vs. 介绍公司：\n  • 清算公司：全服务，直接对接 DTCC，持有客户资产\n  • 介绍公司：只执行交易，外包清算，客户资产在清算公司\n\n▸ Fully Disclosed vs. Omnibus：\n  • 完全披露：清算公司认识每个最终客户，直接发账单\n  • 综合账户：清算公司只看到一个总账户，不知道最终客户\n\n\n══════════════════════════════════════\n十一、主经纪商（Prime Brokerage）\n══════════════════════════════════════\n\n📄 原文：\n"Prime brokerage allows a hedge fund to trade through multiple executing brokers while centralizing clearing and settlement at one prime broker. The prime broker holds the hedge fund\'s assets and provides financing, risk reporting, and securities lending."\n\n【考点解析】\n主经纪商（Prime Broker）服务对冲基金：\n• 集中清算结算（多家执行经纪商 → 一家主经纪商）\n• 持有资产 + 融资借贷 + 风险报告 + 证券借贷（支持卖空）\n\n\n══════════════════════════════════════\n十二、期权清算（Clearing Options Contracts）\n══════════════════════════════════════\n\n📄 原文：\n"Unlike equity and bond trades cleared through DTCC, options are cleared through the Options Clearing Corporation (OCC)."\n\n"The OCC acts as the counterparty in all options transactions, guaranteeing performance of both buyer and seller."\n\n"Options exchanges: CBOE, BOX, NYSE Arca, Nasdaq PHLX, and ISE."\n\n"Options settle T+1."\n\n【考点解析】\n▸ OCC = 期权的中央清算所；充当所有期权交易的对手方\n\n▸ 期权交易所（5个）：CBOE、BOX、NYSE Arca、Nasdaq PHLX、ISE\n\n▸ 结算周期：T+1\n\n⚠️ 股票 / 债券 → DTCC；期权 → OCC（绝对不能混淆！）\n\n\n══════════════════════════════════════\n十三、其他市场实体（Other Entities）\n══════════════════════════════════════\n\n📄 原文：\n"Custodians hold customers\' securities for safekeeping and may collect income on their behalf."\n\n"A registrar maintains the ownership register to ensure the corporation does not issue more shares than authorized."\n\n"A transfer agent issues and cancels stock certificates, maintains the shareholder list, acts as paying agent for dividends and interest, acts as proxy agent, and handles lost certificates."\n\n"Securities trustees hold security interests for bondholders, enforce trust indenture covenants, and represent investors in default or bankruptcy."\n\n【考点解析】\n▸ 托管人（Custodian）：保管证券 + 代收股息 / 利息\n▸ 注册登记机构（Registrar）：维护股东登记册，防止超发\n▸ 过户代理（Transfer Agent）（多功能，常考）：\n  发行 / 注销证书 + 维护股东名单 + 支付股息 / 利息 + 代理投票 + 处理丢失证书\n▸ 证券受托人（Securities Trustee）：代表债券持有人，执行契约条款，违约时代表投资者\n\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n【本章核心考点速记】\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✦ Broker = Agent = 佣金；Dealer = Principal = Markup / Markdown\n✦ 做市商必须持续双向报价；交易员无此义务\n✦ 一级市场（1933 年）→ 发行人收资金；二级市场（1934 年）→ 发行人不收资金\n✦ Nasdaq = 交易所（不是 OTC！）；OTC 四层：OTCQX > OTCQB > Pink > Expert\n✦ Accredited Investor：$100 万净资产（不含主宅）或 $20 万 / $30 万年收入\n✦ QIB：$1 亿 + 机构实体；个人永远不能成为 QIB\n✦ DTCC 清算股票 / 债券；OCC 清算期权（绝对不混淆）\n✦ 过户代理 = 发行 / 注销证书 + 支付股息 + 代理投票\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
     ),
-    2: (
-        "**Ch.2 Overview of Regulation**\n"
-        "• SEC: primary federal regulator; NASAA: state Blue Sky laws; FRB: monetary policy & margin\n"
-        "• Act of 1933: primary market / new issuances / prospectus requirement\n"
-        "• Act of 1934: secondary market / created the SEC\n"
-        "• Investment Company Act 1940: mutual funds; Investment Advisers Act 1940: advisers\n"
-        "• SIPC: protects customers if BD fails — up to $500K ($250K cash); NOT investment losses\n"
-        "• FINRA: largest SRO; Code of Conduct + Code of Arbitration\n"
-        "• MSRB: regulates municipal securities dealers; no enforcement power\n"
-        "• WSP (Written Supervisory Procedures): every firm must maintain one"
-    ),
-    3: (
-        "**Ch.3 Equity Securities**\n"
-        "• Common stock: growth; highest bankruptcy risk; voting rights (board/mergers, NOT dividends)\n"
-        "• Treasury shares: repurchased; no votes, no dividends, not outstanding\n"
-        "• Preferred stock: income; interest rate risk; no voting; dividends before common\n"
-        "• Cumulative preferred: unpaid dividends accumulate (arrears) → must pay before common\n"
-        "• Convertible preferred: more price stability when rates fluctuate\n"
-        "• Rights: short-term (30–45 days), below-market price; Warrants: long-term, above-market\n"
-        "• ADRs: U.S. investors buy foreign stocks in USD; market risk + currency risk\n"
-        "• Sponsored ADRs trade on exchanges; Unsponsored ADRs trade OTC"
-    ),
-    4: (
-        "**Ch.4 Introduction to Debt Instruments**\n"
-        "• Par = $1,000; Coupon/nominal yield; Current yield; YTM; YTC; Accrued interest\n"
-        "• Accrued interest: corp/muni = 30/360; gov't = actual/365\n"
-        "• Serial bonds: mature in installments; Term bonds: all mature same date\n"
-        "• Interest rate risk: rates ↑ → bond prices ↓ (inverse relationship)\n"
-        "• Bond ratings: investment grade ≥ Baa/BBB; junk < Ba/BB\n"
-        "• Corp bonds trade in 1/8 point; Gov't bonds trade in 1/32 point\n"
-        "• Call provision: issuer redeems early; Call protection period; Call premium above par\n"
-        "• Put provision: bondholder sells back at par\n"
-        "• Convertible bonds: convert to stock at conversion ratio; conversion is tax-free"
-    ),
-    5: (
-        "**Ch.5 Types of Debt Instruments**\n"
-        "• T-Bills (<1yr, discount); T-Notes (2–10yr); T-Bonds (>10yr); TIPS (inflation-adjusted)\n"
-        "• Agency securities: GNMA (gov't backed) vs FNMA/FHLMC (gov't sponsored)\n"
-        "• MBS prepayment risk: early payoff risk when interest rates fall\n"
-        "• Municipal bonds — GO bonds: backed by taxes / Revenue bonds: backed by project revenue\n"
-        "• Corporate bonds: secured (mortgage bonds) vs unsecured (debentures/income bonds)\n"
-        "• Tax: U.S. gov't interest = federal taxable, state exempt\n"
-        "• Municipal interest = federal exempt (may be state exempt)\n"
-        "• Eurodollar bonds, Yankee bonds, Eurobonds: international debt distinctions"
-    ),
-    6: (
-        "**Ch.6 Investment Returns**\n"
-        "• Ex-dividend date: stock trades without dividend; price drops by dividend amount\n"
-        "• Bond prices and yields move inversely: rates ↑ → prices ↓\n"
-        "• Discount bond yields: nominal < current < YTM\n"
-        "• Premium bond yields: nominal > current > YTM\n"
-        "• Basis points: 1 bp = 0.01%; 100 bp = 1%\n"
-        "• Cost basis: original purchase price; Sales proceeds − cost basis = capital gain/loss\n"
-        "• Total return = income (dividends/interest) + capital gain/loss\n"
-        "• Current yield = annual income ÷ current market price\n"
-        "• DJIA: price-weighted, 30 stocks; S&P 500: market cap-weighted, 500 stocks"
-    ),
-    7: (
-        "**Ch.7 Packaged Products (Mutual Funds)**\n"
-        "• 3 types of investment companies: management cos (open/closed-end), UITs, face amount certs\n"
-        "• Open-end (mutual fund): issue/redeem at NAV; NAV = (assets − liabilities) ÷ shares\n"
-        "• POP = NAV ÷ (1 − sales charge %); Forward pricing: next calculated NAV\n"
-        "• Share classes: A = front-end load (breakpoints); B = back-end CDSC; C = level 12b-1 fee\n"
-        "• 12b-1 fee: distribution/marketing fee, max 1% annually\n"
-        "• Sales charge reductions: breakpoints, letter of intent (13 months), rights of accumulation\n"
-        "• Violations: breakpoint sales, large Class B purchases, unsuitable switching\n"
-        "• Dollar cost averaging: fixed dollar invested regularly → buys more shares at lower prices\n"
-        "• Closed-end funds: fixed shares, trade on exchanges, may trade at premium/discount to NAV"
-    ),
-    8: (
-        "**Ch.8 Variable Contracts & Municipal Fund Securities**\n"
-        "• Fixed annuity: guaranteed rate, general account; Variable annuity: separate account (SEC-registered)\n"
-        "• Accumulation phase: tax-deferred growth; Annuity phase: periodic payments begin\n"
-        "• Withdrawals: ordinary income tax on gains (LIFO) + 10% penalty if under 59½\n"
-        "• Payout options: life only, life with period certain, joint & survivor, lump sum\n"
-        "• Death benefit: greater of account value or total premiums paid\n"
-        "• 1035 Exchange: tax-free exchange of one annuity/life policy for another\n"
-        "• Qualified annuity: pre-tax funds; Non-qualified: after-tax (cost basis applies)\n"
-        "• 529 plans: state-sponsored, tax-free growth for qualified education expenses\n"
-        "• 529 ABLE: for individuals with disabilities; SECURE Act: 529 can roll to Roth IRA (max $35K)"
-    ),
-    9: (
-        "**Ch.9 Alternative Investments**\n"
-        "• ETFs: investment companies (NOT mutual funds); passively managed; trade on exchanges\n"
-        "• Inverse ETF: opposite of benchmark; Leveraged ETF: amplified returns (2x/3x)\n"
-        "• ETNs: unsecured bank debt; issuer credit risk is the key risk factor\n"
-        "• Hedge funds: private, largely unregulated; accredited investors only\n"
-        "• REITs: invest in real estate; distribute ≥90% of income; taxed as corporations\n"
-        "  – Equity REIT (owns property), Mortgage REIT (holds mortgages), Hybrid (both)\n"
-        "• DPPs: flow-through vehicles; income/losses pass directly to investors\n"
-        "• Limited partnerships: GP = manages + unlimited liability; LP = passive + limited liability\n"
-        "• LP liquidation order: secured creditors → unsecured creditors → limited partners → GP"
-    ),
-    10: (
-        "**Ch.10 Options**\n"
-        "• Call = right to buy; Put = right to sell; both have buyers (long) and sellers/writers (short)\n"
-        "• Premium = Intrinsic Value + Time Value\n"
-        "• ITM call: market > strike; ITM put: market < strike\n"
-        "• Strategies: Long call / Short put = Bullish; Short call / Long put = Bearish\n"
-        "• Breakeven: call = strike + premium; put = strike − premium\n"
-        "• Long call: max gain = unlimited; max loss = premium paid\n"
-        "• Short call: max gain = premium; max loss = unlimited\n"
-        "• Covered call: writer owns the stock; Uncovered/naked: writer does not own stock\n"
-        "• OCC: counterparty to every option; guarantees performance\n"
-        "• Equity options: physical delivery of 100 shares; Index options: cash settlement"
-    ),
-    11: (
-        "**Ch.11 Offerings**\n"
-        "• IPO = company's first public stock sale; Split offering = new + existing shares\n"
-        "• Underwriting types: Firm commitment / Best efforts / All-or-none / Mini-maxi / Stand-by\n"
-        "• Shelf registration (Rule 415): register securities to sell over 2-year period\n"
-        "• Red Herring = preliminary prospectus (no price); Statutory = final prospectus\n"
-        "• Exempt securities: U.S. gov't, municipal bonds, nonprofits, commercial paper (<270 days)\n"
-        "• Accredited investor: net worth >$1M (excl. primary home) OR income >$200K/$300K (joint)\n"
-        "• Rule 144: resale of restricted/control stock (volume limits + holding period)\n"
-        "• Rule 144A: restricted securities resold to QIBs without SEC registration\n"
-        "• Rule 147/147A: intrastate offerings; QIB = institution with >$100M in securities\n"
-        "• Official statement = municipal bond disclosure doc; EMMA = MSRB's public disclosure system"
-    ),
-    12: (
-        "**Ch.12 Orders & Trading Strategies**\n"
-        "• Broker = agent (commission); Dealer = principal (markup on buy, markdown on sell)\n"
-        "• 5% policy: FINRA guideline for reasonable markups/commissions; not a firm rule\n"
-        "• Short sale: sell borrowed shares expecting price drop; must be covered later\n"
-        "• Order types:\n"
-        "  – Market order: best available price immediately\n"
-        "  – Limit order: execute at specified price or better\n"
-        "  – Stop order: becomes market order when stop price hit\n"
-        "  – Stop-limit order: becomes limit order (not market) when triggered\n"
-        "• Day order: expires end of day; GTC: open until executed or cancelled\n"
-        "• Margin account: borrow up to 50% of purchase (Reg T); minimum equity $2,000\n"
-        "• Proceeds transaction: sell one security to buy another = considered one transaction for 5% policy"
-    ),
-    13: (
-        "**Ch.13 Settlement & Corporate Actions**\n"
-        "• Regular-way settlement: corporate/municipal + gov't/options = T+1\n"
-        "• Reg T payment: T+2; failure to pay → securities sold out + 90-day account freeze\n"
-        "• Cash settlement: same-day; must be agreed by both parties\n"
-        "• Good delivery: securities in proper form (correct denomination, properly endorsed)\n"
-        "• Stock power: separate endorsement form enabling transfer without signing the certificate\n"
-        "• Tender offer: offer to buy shares at premium; oversubscribed → prorated; undersubscribed → fewer shares\n"
-        "• Forward stock split (2-for-1): double shares, half price; total value unchanged; cost basis halved\n"
-        "• Reverse stock split: fewer shares, higher price; same total value\n"
-        "• Stock splits: NOT taxable; cost basis adjusted proportionally"
-    ),
-    14: (
-        "**Ch.14 Customer Accounts**\n"
-        "• Cash account: pay in full by settlement; Margin account: borrow 50% (Reg T), min equity $2,000\n"
-        "• Discretionary account: rep trades without prior approval; requires written authorization\n"
-        "• Full POA: complete control; Limited POA: specific transactions only\n"
-        "• Not-held order: time/price discretion given to rep — NOT a discretionary account\n"
-        "• Joint accounts: JTWROS (right of survivorship) or TIC (share passes to estate)\n"
-        "• Custodial UGMA/UTMA: minor is beneficial owner; custodian manages until majority\n"
-        "• Retirement accounts:\n"
-        "  – Traditional IRA: pre-tax, tax-deferred growth, RMDs at age 73\n"
-        "  – Roth IRA: after-tax, tax-free growth, NO RMDs\n"
-        "  – 401(k)/403(b): employer-sponsored, pre-tax, RMDs apply\n"
-        "• ERISA: federal law governing private employer plans (eligibility, vesting, fiduciary duty)\n"
-        "• Coverdell ESA: education savings, $2,000/year limit, tax-free for qualified expenses"
-    ),
-    15: (
-        "**Ch.15 Compliance Considerations**\n"
-        "• KYC (Know Your Customer): name, address, DOB, SSN, employment, financial info required\n"
-        "• Trusted contact person: should be requested (not required); used if exploitation suspected\n"
-        "• FINRA 3 suitability obligations:\n"
-        "  1. Reasonable Basis: suitable for some investors\n"
-        "  2. Customer-Specific: suitable for THIS customer\n"
-        "  3. Quantitative: not excessive trading (anti-churning)\n"
-        "• 3 stages of money laundering: Placement → Layering → Integration\n"
-        "• FinCEN CTR: cash >$10,000; SAR: suspicious activity >$5,000 (don't tell customer)\n"
-        "• Reg S-P: protect customers' non-public personal info (privacy notice required)\n"
-        "• Communications: Correspondence (≤25 retail) / Retail Comm (>25 retail) / Institutional\n"
-        "• BCP (Business Continuity Plan): required for all member firms\n"
-        "• Records: 3 years (trade tickets, confirms), 6 years (account statements, blotters), lifetime (corporate docs)"
-    ),
-    16: (
-        "**Ch.16 Prohibited Activities**\n"
-        "• Regulation M: prohibits price manipulation during a distribution\n"
-        "• Front-running: trading ahead of large customer order to profit from anticipated move\n"
-        "• Churning: excessive trading to generate commissions (quantitative suitability violation)\n"
-        "• Reverse churning: excessive inactivity in a fee-based account\n"
-        "• Marking the close/open: trades near market open/close to manipulate closing prices\n"
-        "• Interpositioning: unnecessary middleman to increase markups\n"
-        "• Insider trading: trading on material, non-public information\n"
-        "• Freeriding: buying and selling securities before paying (Reg T violation)\n"
-        "• FINRA New Issue Rule: 'restricted persons' (BD employees, FINRA associates, family) cannot buy IPOs at POP\n"
-        "• Sharing in customer accounts: only with written consent + proportional to investment\n"
-        "• Borrowing/lending to clients: generally prohibited; limited exceptions apply\n"
-        "• Temporary hold: firms can hold disbursements if financial exploitation of senior/adult suspected"
-    ),
-    17: (
-        "**Ch.17 SRO Requirements for Associated Persons**\n"
-        "• SIE Exam: entry-level; does NOT grant registration rights; must pass a 'top-off' exam (Series 6, 7, etc.)\n"
-        "• Associated person: anyone employed by or associated with a FINRA member firm\n"
-        "• Non-registered persons: clerical/admin only; no public interaction on securities; no securities-based pay\n"
-        "• Form U4: required for all registered persons; filed via CRD (Central Registration Depository)\n"
-        "• Statutory disqualification: criminal convictions, regulatory sanctions bar registration\n"
-        "• Eligibility proceeding: firm can request disqualified person associate under heightened supervision\n"
-        "• Fingerprinting: required for registered persons and certain non-registered persons\n"
-        "• Must satisfy both FINRA AND state (Blue Sky) registration requirements\n"
-        "• CE requirements:\n"
-        "  – Regulatory Element: FINRA computer-based training, annually\n"
-        "  – Firm Element: firm-specific training, developed by each firm\n"
-        "• Special Inactive Status: for registered persons on active military duty"
-    ),
-    18: (
-        "**Ch.18 Employee Conduct & Reportable Events**\n"
-        "• Form U4: personal info, employment history, disclosure questions (criminal, regulatory, financial)\n"
-        "• Form U5: termination notice; filed within 30 days; reason for departure disclosed\n"
-        "• Form U6: filed by regulators/firms to report disciplinary actions\n"
-        "• BrokerCheck: FINRA's public database; available 10 years post-termination for most events\n"
-        "• Must notify FINRA for: criminal charges, regulatory actions, civil judgments, bankruptcy, liens >$2,500, complaints >$15,000\n"
-        "• Outside Business Activities (OBA): must disclose and get approval from employing firm\n"
-        "• Selling Away: selling securities not offered through your firm; requires prior written approval\n"
-        "• Gifts: cannot give/receive >$100/year per person connected with securities business\n"
-        "• Political contributions (Pay-to-Play Rule): max $250 to officials who influence muni securities business\n"
-        "• Customer complaints: recorded + quarterly reports to FINRA; records kept 4 years at OSJ"
-    ),
-    19: (
-        "**Ch.19 Economic Factors**\n"
-        "• GDP: value of all goods/services within a country's borders\n"
-        "• GNP: value produced by a country's residents, regardless of location\n"
-        "• Inflation measured by CPI; Deflation = falling prices; Stagflation = inflation + recession\n"
-        "• Real interest rate = nominal rate − inflation rate\n"
-        "• Business cycle: Expansion → Peak → Contraction/Recession → Trough\n"
-        "  – Recession = 2+ consecutive quarters of declining GDP\n"
-        "• Economic indicators: Leading (predict future), Coincident (current), Lagging (confirm past)\n"
-        "• Key rates: Prime (best customers), Discount (Fed to banks), Fed Funds (bank-to-bank overnight), Broker Call (banks to BDs)\n"
-        "• FRB tools: Open market ops (buy Treasuries → ↑ money supply), Discount rate, Reserve requirements\n"
-        "• Yield curves: Normal (upward), Inverted (recession signal), Flat (transition)\n"
-        "• Balance sheet: assets = liabilities + equity; Income statement: revenues − expenses = net income\n"
-        "• EBIT / EBITDA: measures of profitability; bond coverage ratio = EBIT ÷ interest expense"
-    ),
-    20: (
-        "**Ch.20 Investment Risks**\n"
-        "• Systematic risk (non-diversifiable): affects entire market\n"
-        "  – Market risk (equities), Interest rate risk (bonds), Inflation risk, Event risk\n"
-        "• Non-systematic risk (diversifiable): specific to company/industry; reduced through diversification\n"
-        "  – Business risk, Regulatory/legislative risk, Capital risk, Liquidity risk\n"
-        "  – Currency risk, Political risk, Credit risk, Prepayment risk (MBS)\n"
-        "• Alpha: excess return vs benchmark (manager skill); Beta: sensitivity to market movements\n"
-        "  – Beta >1: more volatile; Beta <1: less volatile; Beta =1: moves with market\n"
-        "• Duration: measure of interest rate sensitivity; longer duration = greater price change per rate move\n"
-        "• Efficient Market Hypothesis (EMH): prices reflect all available info; active mgmt can't consistently beat market\n"
-        "• Strategic (passive) allocation: buy-and-hold, indexing, rebalancing\n"
-        "• Tactical (active) allocation: sector rotation, short-term adjustments\n"
-        "• Options as hedges: buy puts to protect long stock; buy calls to hedge short positions"
-    ),
+    2: None,
+    3: None,
+    4: None,
+    5: None,
+    6: None,
+    7: None,
+    8: None,
+    9: None,
+    10: None,
+    11: None,
+    12: None,
+    13: None,
+    14: None,
+    15: None,
+    16: None,
+    17: None,
+    18: None,
+    19: None,
+    20: None,
 }
-
 def get_todays_chapter():
     delta = (TODAY - TRACKING_START).days
     return (delta % TOTAL_CHAPTERS) + 1
