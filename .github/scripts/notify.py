@@ -1038,6 +1038,9 @@ AML 计划要求（BD 必须建立）：
 ✦ 市政债：联邦免税；本州债券额外免州/地方税（三重免税）"""),
 }
 def get_todays_chapter():
+    for arg in sys.argv:
+        if arg.startswith('--chapter='):
+            return int(arg.split('=')[1])
     delta = (TODAY - TRACKING_START).days
     return (delta % TOTAL_CHAPTERS) + 1
 
@@ -1356,6 +1359,7 @@ def main():
         else:
             bullets = '（本章速记即将更新，敬请期待）'
         content = (
+            f'<at user_id="all">所有人</at>\n\n'
             f'📚 **SIE 今日速记 · 第{ch}章：{title_str}**\n\n'
             f'{bullets}\n\n'
             f'📖 完整精读笔记 → {SITE_URL}'

@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 2 * * *'   # 10:00 Malaysia (UTC+8)
   workflow_dispatch:
+    inputs:
+      chapter:
+        description: 'Override chapter number (1-20), leave blank for today'
+        required: false
+        default: ''
 
 jobs:
   notify:
@@ -14,4 +19,9 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python .github/scripts/notify.py daily-notes ${{ secrets.SUPABASE_ANON_KEY }}
+      - run: |
+          EXTRA=""
+          if [ -n "${{ github.event.inputs.chapter }}" ]; then
+            EXTRA="--chapter=${{ github.event.inputs.chapter }}"
+          fi
+          python .github/scripts/notify.py daily-notes ${{ secrets.SUPABASE_ANON_KEY }} $EXTRA
