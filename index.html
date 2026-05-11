@@ -213,7 +213,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .filter-pill:hover:not(.active){border-color:var(--border2);}
 .official-box{background:var(--blue-bg);border:1px solid var(--blue-light);border-radius:var(--r-sm);padding:14px 16px;}
 .official-label{font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
-.official-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;}
+.official-body{font-size:13px;color:var(--text);line-height:1.7;}
 .note-card{padding:12px 0;border-bottom:1px solid var(--border);}
 .note-card:last-of-type{border-bottom:none;}
 .note-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
@@ -498,6 +498,49 @@ function fmtGap(gap) {
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildMdTable(lines) {
+  const rows = lines.filter(l => !/^\s*\|[\s\-:|]+\|\s*$/.test(l));
+  if (rows.length === 0) return '';
+  let out = '<table style="border-collapse:collapse;width:100%;margin:6px 0 10px;font-size:12px;">';
+  rows.forEach((line, idx) => {
+    const cells = line.split('|').slice(1, -1);
+    const style = idx === 0
+      ? 'background:#e8f5e9;font-weight:600;padding:5px 8px;border:1px solid #b0c4b0;text-align:left;'
+      : 'padding:4px 8px;border:1px solid #ddd;vertical-align:top;';
+    out += '<tr>' + cells.map(c => `<td style="${style}">${esc(c.trim())}</td>`).join('') + '</tr>';
+  });
+  out += '</table>';
+  return out;
+}
+
+function renderOfficial(text) {
+  const lines = text.split('\n');
+  let html = '';
+  let textBuf = [];
+  function flushText() {
+    if (textBuf.length === 0) return;
+    html += '<div style="white-space:pre-wrap">' + textBuf.join('\n') + '</div>';
+    textBuf = [];
+  }
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].trimStart().startsWith('|')) {
+      flushText();
+      const tableLines = [];
+      while (i < lines.length && lines[i].trimStart().startsWith('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      html += buildMdTable(tableLines);
+    } else {
+      textBuf.push(esc(lines[i]));
+      i++;
+    }
+  }
+  flushText();
+  return html;
 }
 
 // ══════════════════════════════════════════════
@@ -2116,10 +2159,11 @@ const OFFICIAL_NOTES = {
 - 内在价值 = 市场价 - 认购价（正值时）
 
 对比总结：
-              Rights        Warrants
-认购价格      低于市价       高于市价
-有效期        短（30-45天）  长（数年）
-发给谁        现有股东       新证券购买者
+| 项目     | Rights       | Warrants     |
+|----------|--------------|--------------|
+| 认购价格  | 低于市价      | 高于市价      |
+| 有效期    | 短（30-45天） | 长（数年）    |
+| 发给谁    | 现有股东      | 新证券购买者  |
 
 ⚠️ 考试提示：Rights 低于市价；Warrants 高于市价——必考对比
 
@@ -2187,10 +2231,11 @@ Rule 10b-18 回购安全港四项条件：
 价格表示法：以面值百分比表示（"100"= 100%面值 = $1,000）
 每个"点（point）"= 面值的1% = $10
 
-  价格  百分比   美元     状态
-  99   99%    $990    折价（Discount）
-  100  100%   $1,000  平价（Par）
-  101  101%   $1,010  溢价（Premium）
+| 价格 | 百分比 | 美元   | 状态            |
+|------|--------|--------|-----------------|
+| 99   | 99%    | $990   | 折价（Discount） |
+| 100  | 100%   | $1,000 | 平价（Par）      |
+| 101  | 101%   | $1,010 | 溢价（Premium）  |
 
 **交易单位（必考）：**
 - 企业债/市政债：以 1/8 点为单位
@@ -2231,24 +2276,19 @@ Rule 10b-18 回购安全港四项条件：
 "Credit rating companies include Moody's, Standard and Poor's (S&P), and Fitch Investors Service. Each company evaluates the possibility that an issuer may default and assigns the issue a credit rating."
 
 【考点解析】
-评级对照表：
-  等级      Moody's   S&P    Fitch
-  最佳      Aaa       AAA    AAA
-  高质量    Aa        AA     AA
-  中上      A         A      A
-  中等      Baa       BBB    BBB    ← 投资级下限
-  ----------投机级分界线----------
-  投机      Ba        BB     BB
-            B         B      B
-            Caa       CCC    CCC
-  违约      C         D      DDD/DD/D
+| 等级              | Moody's | S&P  | Fitch    |
+|------------------|---------|------|----------|
+| 最佳              | Aaa     | AAA  | AAA      |
+| 高质量            | Aa      | AA   | AA       |
+| 中上              | A       | A    | A        |
+| 中等（投资级下限） | Baa     | BBB  | BBB      |
+| 投机              | Ba      | BB   | BB       |
+|                  | B       | B    | B        |
+|                  | Caa     | CCC  | CCC      |
+| 违约              | C       | D    | DDD/DD/D |
 
-投资级（Investment Grade）：Moody's Baa及以上 / S&P BBB及以上
-投机级（Speculative Grade / Junk）：Moody's Ba及以下 / S&P BB及以下
-
-细分：
-- Moody's：在主评级后加1、2、3（1最高），如 Aa1 > Aa2 > Aa3
-- S&P：使用+/-符号，如 A+ > A > A- > BBB+
+★ 投资级分界线：Moody's Baa / S&P BBB 及以上
+细分：Moody's加1/2/3（1最高）；S&P用+/-符号
 
 ⚠️ 考试提示：Aaa/AAA是最高评级；投资级与投机级分界（Baa/BBB）是必考
 
@@ -2394,13 +2434,14 @@ Rule 10b-18 回购安全港四项条件：
 - 免于1933年证券法注册要求（豁免证券）
 - 利息：联邦应税，免州/地方税
 
-国债类型总览：
-  T-Bills（国库券）：到期≤1年（4/13/26/52周）；零息，折价发行；以收益率报价；最小面值$100
-  T-Notes（中期国债）：2–10年；半年付息；电子化；最小面值$100
-  T-Bonds（长期国债）：>10年；半年付息；电子化；最小面值$100
-  TIPS：5、10、30年；本金按CPI调整；利率固定
-  STRIPS：零息；通过剥离国债利息/本金创建；收益率报价
-  CMBs（现金管理票据）：极短期（可至1天）；非定期发行；现金流管理
+| 类型                | 期限              | 特点                                    |
+|---------------------|-------------------|-----------------------------------------|
+| T-Bills（国库券）   | ≤1年（4/13/26/52周）| 零息折价；收益率报价；最小面值$100     |
+| T-Notes（中期国债） | 2–10年            | 半年付息；电子化；最小面值$100          |
+| T-Bonds（长期国债） | >10年             | 半年付息；电子化；最小面值$100          |
+| TIPS                | 5、10、30年       | 本金按CPI调整；利率固定                 |
+| STRIPS              | 零息              | 剥离国债利息/本金创建；收益率报价       |
+| CMBs（现金管理票据）| 极短期（可至1天） | 非定期发行；现金流管理                  |
 
 ⚠️ 考试提示：T-Bills是唯一以收益率报价的国债；国债利息免州/地方税
 
@@ -2471,12 +2512,14 @@ T-Bills报价特殊性：
 - Single Price Auction（统一价格拍卖）
 
 拍卖时间表：
-  4周国库券：每周（周二拍卖，周四发行）
-  13周/26周国库券：每周（周一拍卖，周四发行）
-  52周国库券：每4周（周二拍卖，周四发行）
-  2/3/5年期国债：每月（月底发行）
-  10年期国债：每季度（2、5、8、11月，15日发行）
-  30年期国债：每季度（2、5、8、11月，15日发行）
+| 品种              | 拍卖频率          | 发行时间              |
+|------------------|-------------------|-----------------------|
+| 4周国库券         | 每周              | 周二拍卖，周四发行    |
+| 13/26周国库券     | 每周              | 周一拍卖，周四发行    |
+| 52周国库券        | 每4周             | 周二拍卖，周四发行    |
+| 2/3/5年期国债     | 每月              | 月底发行              |
+| 10年期国债        | 每季度（2/5/8/11月）| 15日发行            |
+| 30年期国债        | 每季度（2/5/8/11月）| 15日发行            |
 
 ⚠️ 考试提示：非竞争性投标先成交；荷兰式拍卖=统一价格
 
@@ -2492,18 +2535,19 @@ T-Bills报价特殊性：
 - GNMA（吉利美）：属于HUD；有美国政府完全信用背书；利息全部应税（联邦+州+地方）
 
 政府支持企业（GSEs）——私人拥有，国会授权，无直接政府背书：
-  FNMA（房利美）：购买FHA/VA/传统抵押贷款；利息全部应税
-  FHLMC（房地美）：为储蓄机构融资；利息全部应税
-  FFCB（联邦农业信贷银行）：农业贷款；利息联邦应税，免州/地方税
-  FHLB（联邦住房贷款银行）：为储蓄机构提供流动性；利息联邦应税，免州/地方税
+- FNMA（房利美）：购买FHA/VA/传统抵押贷款；利息全部应税
+- FHLMC（房地美）：为储蓄机构融资；利息全部应税
+- FFCB（联邦农业信贷银行）：农业贷款；利息联邦应税，免州/地方税
+- FHLB（联邦住房贷款银行）：为储蓄机构提供流动性；利息联邦应税，免州/地方税
 
 税务速查：
-  机构           联邦税   州/地方税
-  GNMA           应税     应税
-  FNMA           应税     应税
-  FHLMC          应税     应税
-  FFCB           应税     免税
-  FHLB           应税     免税
+| 机构   | 联邦税 | 州/地方税 |
+|--------|--------|-----------|
+| GNMA   | 应税   | 应税      |
+| FNMA   | 应税   | 应税      |
+| FHLMC  | 应税   | 应税      |
+| FFCB   | 应税   | 免税      |
+| FHLB   | 应税   | 免税      |
 
 ⚠️ 考试提示：GNMA是唯一有政府完全背书的抵押机构；GNMA/FNMA/FHLMC利息全部应税
 
@@ -2552,31 +2596,25 @@ GNMA 修正传递证书特点：
 - 本州债券利息通常还免州/地方税（三重免税效果）
 
 两大类型对比：
-
-一般责任债券（GO Bonds）：
-- 以发行方完全信用和征税权力担保
-- 需要选民批准（因为用税款偿还）
-- 受债务上限约束
-- 州GO债：由所得税、销售税等保障
-- 地方GO债：主要由不动产税（Ad Valorem Tax）保障
-
-收益债券（Revenue Bonds）：
-- 以项目产生的收入偿还（过路费、使用费）
-- 无需选民批准
-- 需要进行可行性研究（Feasibility Study）
-- 通常比GO债风险更高（收入可能不足）
+| 项目       | GO债（一般责任债）              | Revenue债（收益债）            |
+|-----------|-------------------------------|-------------------------------|
+| 还款来源   | 税收（不动产税/所得税等）       | 项目收入（过路费、使用费等）    |
+| 需要选民批准| 是                            | 否                             |
+| 可行性研究  | 否                            | 是                             |
+| 债务上限   | 受约束                        | 不受约束                       |
+| 风险       | 相对较低                      | 相对较高（依赖项目收入）        |
 
 各类收益债券：
-  住房收益债（Housing Revenue）：租金/抵押贷款还款
-  宿舍债（Dormitory）：学生学费
-  医疗卫生债（Health Care）：非营利医院收入
-  公用事业债（Utility Revenue）：用户费用（有时发双重担保债）
-  交通债（Transportation）：通行费
-  特殊税收债（Special Tax）：特定税收（非地产税）
-  特别评估债（Special Assessment）：受益者专项收费
-  道义责任债（Moral Obligation）：项目收入+州道义背书（非法律义务）
-  工业发展债（IDB）：企业租赁付款；信用评级基于企业（非市政）
-  双重担保债（Double-Barreled Bond）：同时有收入和税收来源
+- 住房收益债（Housing Revenue）：租金/抵押贷款还款
+- 宿舍债（Dormitory）：学生学费
+- 医疗卫生债（Health Care）：非营利医院收入
+- 公用事业债（Utility Revenue）：用户费用
+- 交通债（Transportation）：通行费
+- 特殊税收债（Special Tax）：特定税收（非地产税）
+- 特别评估债（Special Assessment）：受益者专项收费
+- 道义责任债（Moral Obligation）：项目收入+州道义背书（非法律义务）
+- 工业发展债（IDB）：企业租赁付款；信用评级基于企业（非市政）
+- 双重担保债（Double-Barreled Bond）：同时有收入和税收来源
 
 ⚠️ 考试提示：GO债=选民批准+税收；Revenue债=可行性研究+项目收入——高频对比考点
 
@@ -2588,13 +2626,14 @@ GNMA 修正传递证书特点：
 "Municipal notes are short-term issues that are normally issued to assist in financing a project or to assist a municipality in managing its cash flow."
 
 【考点解析】
-缩写    全称                              用途
-TAN     Tax Anticipation Note             预期未来税收，用于当前运营
-RAN     Revenue Anticipation Note         预期未来收入（联邦/州补贴）
-TRAN    Tax & Revenue Anticipation Note   TAN+RAN合并
-BAN     Bond Anticipation Note            为最终发行长期债券过渡融资
-GAN     Grant Anticipation Note           预期联邦补助金
-CLN     Construction Loan Note            为建设项目提供临时资金
+| 缩写  | 全称                              | 用途                     |
+|-------|-----------------------------------|--------------------------|
+| TAN   | Tax Anticipation Note             | 预期未来税收，用于当前运营 |
+| RAN   | Revenue Anticipation Note         | 预期未来收入（联邦/州补贴）|
+| TRAN  | Tax & Revenue Anticipation Note   | TAN+RAN合并              |
+| BAN   | Bond Anticipation Note            | 为最终发行长期债券过渡融资 |
+| GAN   | Grant Anticipation Note           | 预期联邦补助金            |
+| CLN   | Construction Loan Note            | 为建设项目提供临时资金    |
 
 市政票据评级：
 - Moody's：MIG 1（最高）→ MIG 2 → MIG 3 → SG（投机）
@@ -2623,11 +2662,12 @@ Revenue债发行要求：
 2. 无需选民批准
 
 承销方式：
-  证券类型              主要承销方式
-  美国国债              拍卖（Auction）
-  市政一般责任债（GO）   竞争性销售（Competitive Sale）
-  市政收益债            协商销售（Negotiated Sale）
-  企业债                协商销售（Negotiated Sale）
+| 证券类型                | 主要承销方式                    |
+|------------------------|--------------------------------|
+| 美国国债                | 拍卖（Auction）                |
+| 市政一般责任债（GO）    | 竞争性销售（Competitive Sale） |
+| 市政收益债              | 协商销售（Negotiated Sale）    |
+| 企业债                  | 协商销售（Negotiated Sale）    |
 
 竞争性销售：邀请多家承销商竞标，最低利率成本者获选
 协商销售：发行方直接指定承销商，协商条款
@@ -2643,9 +2683,9 @@ Revenue债发行要求：
 
 【考点解析】
 有担保债券（Secured Bonds）：
-  抵押债（Mortgage Bond）：不动产（第一或第二抵押权）
-  设备信托证书（Equipment Trust Certificate）：特定设备（铁路车厢、飞机等）
-  担保信托债（Collateral Trust Bond）：第三方有价证券（股票/债券）放入托管
+- 抵押债（Mortgage Bond）：不动产（第一或第二抵押权）
+- 设备信托证书（Equipment Trust Certificate）：特定设备（铁路车厢、飞机等）
+- 担保信托债（Collateral Trust Bond）：第三方有价证券（股票/债券）放入托管
 
 无担保债券（Unsecured Bonds / Debentures）：
 - 仅凭公司完全信用担保
@@ -2681,10 +2721,11 @@ Revenue债发行要求：
 "Eurodollar bonds pay their principal and interest in U.S. dollars, but are issued outside of the United States (primarily in Europe)... Yankee bonds allow foreign entities to borrow money in the U.S. marketplace. These bonds are registered with the SEC and sold primarily in the United States."
 
 【考点解析】
-  类型                发行地          计价货币    监管
-  欧洲美元债          美国境外（欧洲）  美元        非SEC
-  扬基债（Yankee）    美国境内         美元        SEC注册
-  欧洲债（Eurobond）  某国境内         另一国货币   多样化
+| 类型               | 发行地            | 计价货币   | 监管    |
+|--------------------|-------------------|------------|---------|
+| 欧洲美元债         | 美国境外（欧洲）  | 美元       | 非SEC   |
+| 扬基债（Yankee）   | 美国境内          | 美元       | SEC注册 |
+| 欧洲债（Eurobond） | 某国境内          | 另一国货币 | 多样化  |
 
 例：俄罗斯企业在伦敦发行瑞士法郎计价债券 = Eurobond（外付债）
 
@@ -2698,13 +2739,14 @@ Revenue债发行要求：
 "Short-term debt instruments with one year or less to maturity are referred to as money-market securities... Commercial paper is short-term, unsecured corporate debt which typically matures in 270 days or less. Due to its short maturity, commercial paper is exempt from the registration and prospectus requirements of the Securities Act of 1933."
 
 【考点解析】
-  工具                      发行方    特点
-  商业票据（Commercial Paper）公司    期限≤270天；无担保；最小$100,000；折价；免注册
-  银行承兑汇票（BA）          银行    促进国际贸易；货物+银行双重担保
-  可转让存单（Negotiable CD） 银行    最低$100,000；有二级市场；$250K以下FDIC保障
-  联邦基金（Fed Funds）       银行间  隔夜拆借；每日波动；FRB间接影响
-  回购协议（Repo）            经纪商  抵押证券借贷；通常隔夜
-  逆回购（Reverse Repo）      经纪商  买入证券同时约定回售
+| 工具                        | 发行方 | 特点                                         |
+|----------------------------|--------|----------------------------------------------|
+| 商业票据（Commercial Paper）| 公司   | 期限≤270天；无担保；最小$100,000；折价；免注册 |
+| 银行承兑汇票（BA）          | 银行   | 促进国际贸易；货物+银行双重担保               |
+| 可转让存单（Negotiable CD） | 银行   | 最低$100,000；有二级市场；$250K以下FDIC保障   |
+| 联邦基金（Fed Funds）       | 银行间 | 隔夜拆借；每日波动；FRB间接影响               |
+| 回购协议（Repo）            | 经纪商 | 抵押证券借贷；通常隔夜                        |
+| 逆回购（Reverse Repo）      | 经纪商 | 买入证券同时约定回售                          |
 
 商业票据信用评级：
 - S&P：A1（最高）→ A2 → A3
@@ -2726,16 +2768,17 @@ Revenue债发行要求：
 "The interest received on T-notes and T-bonds is taxed at the federal level, but exempt from state and local taxation... Any interest earned on [GNMA securities] is subject to federal, state, and local taxes."
 
 【考点解析】
-  证券类型                            联邦税    州/地方税
-  T-Bill / T-Note / T-Bond            应税      免税
-  TIPS / STRIPS                       应税      免税
-  GNMA（吉利美）                      应税      应税
-  FNMA（房利美）                      应税      应税
-  FHLMC（房地美）                     应税      应税
-  FFCB / FHLB                         应税      免税
-  市政债（Municipal Bonds）            免税      视情况*
-  领土/属地债券（Territory/Possession）免税      免税
-  企业债（Corporate Bonds）            应税      应税
+| 证券类型                              | 联邦税 | 州/地方税  |
+|--------------------------------------|--------|-----------|
+| T-Bill / T-Note / T-Bond             | 应税   | 免税      |
+| TIPS / STRIPS                        | 应税   | 免税      |
+| GNMA（吉利美）                       | 应税   | 应税      |
+| FNMA（房利美）                       | 应税   | 应税      |
+| FHLMC（房地美）                      | 应税   | 应税      |
+| FFCB / FHLB                          | 应税   | 免税      |
+| 市政债（Municipal Bonds）            | 免税   | 视情况*   |
+| 领土/属地债券（Territory/Possession） | 免税   | 免税      |
+| 企业债（Corporate Bonds）            | 应税   | 应税      |
 
 *市政债：大多数州对本州居民购买本州债券免州/地方税
 "三免"规则：市政债 + 投资者为该州居民 = 联邦、州、地方税全免
@@ -2803,7 +2846,7 @@ function renderKnowledge() {
   const officialNote = OFFICIAL_NOTES[kbChapter];
   const officialSection = `<div class="official-box">
     <div class="official-label">📋 官方精读</div>
-    <div class="official-body">${officialNote ? esc(officialNote) : '<span style="color:var(--text3);font-style:italic;">本章官方精读内容尚未录入，敬请期待。</span>'}</div>
+    <div class="official-body">${officialNote ? renderOfficial(officialNote) : '<span style="color:var(--text3);font-style:italic;">本章官方精读内容尚未录入，敬请期待。</span>'}</div>
   </div>`;
 
   const noteCards = chapNotes.length === 0
