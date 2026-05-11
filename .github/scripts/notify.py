@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """SIE Exam Tracker — Feishu Notification Script
 Usage: python notify.py <type> <supabase_key>
-Types: daily-reminder | missed-checkin | weekly-report | behind-alert
+Types: daily-reminder | missed-checkin | weekly-report | behind-alert | daily-notes
 """
 import sys
 import json
@@ -16,6 +16,7 @@ TRACKING_START = date(2026, 5, 8)
 TOTAL_CHAPTERS = 20
 TODAY          = date.today()
 DRY_RUN        = '--dry-run' in sys.argv
+NOTES_WEBHOOK  = 'https://open.feishu.cn/open-apis/bot/v2/hook/bf8c9760-404e-4665-abe8-e680950dafbd'
 
 USERS = {
     'jiannbinkhor': {'name':'Jiannbin Khor', 'startChapter':11, 'examDate':date(2026,6,5),  'weeklyHours':11.5, 'studyStart':date(2026,4,6)},
@@ -1040,6 +1041,18 @@ def get_todays_chapter():
     delta = (TODAY - TRACKING_START).days
     return (delta % TOTAL_CHAPTERS) + 1
 
+def extract_quick_notes(text):
+    """Return only the 速记 bullet lines from a chapter's OFFICIAL_NOTES entry."""
+    marker = '【本章核心考点速记】'
+    idx = text.find(marker)
+    if idx == -1:
+        return text
+    # Skip the two ━━━ separator lines surrounding the header
+    after = text[idx + len(marker):]
+    lines = after.splitlines()
+    bullets = [l for l in lines if l.strip().startswith('✦')]
+    return '\n'.join(bullets) if bullets else after.strip()
+
 QUOTES = [
     "The secret of getting ahead is getting started.",
     "不是因为有希望才坚持，而是坚持了才会有希望。",
@@ -1326,6 +1339,33 @@ def main():
         )
         card = build_card(f'📖 今日学习重点 · 第 {ch} 章', 'blue', content, '📎 打开知识库 →', SITE_URL)
         send_feishu(webhook_url, card)
+
+    # ── Daily notes push (SR1 学习群) ──
+    elif ntype == 'daily-notes':
+        ch = get_todays_chapter()
+        note = OFFICIAL_NOTES.get(ch)
+        ch_titles = {
+            1:'市场参与者',2:'监管框架',3:'股票',4:'债券基础',5:'债券种类',
+            6:'投资公司',7:'包销',8:'客户账户',9:'交易与订单',10:'行情报价',
+            11:'经济学',12:'技术分析',13:'期权基础',14:'期权策略',15:'直接参与计划',
+            16:'退休账户',17:'年金与保险',18:'客户沟通',19:'禁止行为',20:'税务考量',
+        }
+        title_str = ch_titles.get(ch, f'第{ch}章')
+        if note:
+            bullets = extract_quick_notes(note)
+        else:
+            bullets = '（本章速记即将更新，敬请期待）'
+        content = (
+            f'📚 **SIE 今日速记 · 第{ch}章：{title_str}**\n\n'
+            f'{bullets}\n\n'
+            f'📖 完整精读笔记 → {SITE_URL}'
+        )
+        payload = {'msg_type': 'text', 'content': {'text': content}}
+        if DRY_RUN:
+            print(f'[DRY RUN] daily-notes preview:\n{content}')
+        else:
+            r = requests.post(NOTES_WEBHOOK, json=payload)
+            print(f'daily-notes response: {r.text}')
 
     # ── Behind alert ──
     elif ntype == 'behind-alert':
