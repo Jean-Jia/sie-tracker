@@ -393,6 +393,18 @@ function getProgress(username) {
   return DB.progress[username];
 }
 
+async function alertAdminSyncFailed(username, reason) {
+  const webhook = DB.webhookConfig?.groupWebhook;
+  if (!webhook) return;
+  const name = USERS[username]?.name || username;
+  const payload = {
+    msg_type: 'text',
+    content: { text: `⚠️ [同步失败告警]\n${name} 的数据未能保存到云端。\n原因：${reason}\n时间：${new Date().toLocaleString('zh-CN')}\n请管理员协助检查。` }
+  };
+  fetch(webhook, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+    .catch(e => console.error('admin alert failed:', e));
+}
+
 async function saveProgress(username, data) {
   DB.progress[username] = data;
 
@@ -400,7 +412,11 @@ async function saveProgress(username, data) {
   const { error: progErr } = await sb.from('chapter_progress').upsert(
     { username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() }
   );
-  if (progErr) { console.error('chapter_progress save failed:', progErr); return false; }
+  if (progErr) {
+    console.error('chapter_progress save failed:', progErr);
+    alertAdminSyncFailed(username, `章节进度写入失败 (${progErr.message})`);
+    return false;
+  }
 
   // 2. Write check-in if present
   const ci = data.checkins[TODAY];
@@ -409,7 +425,11 @@ async function saveProgress(username, data) {
       { username, date: TODAY, hours: ci.hours, content: ci.content },
       { onConflict: 'username,date' }
     );
-    if (ciErr) { console.error('checkins save failed:', ciErr); return false; }
+    if (ciErr) {
+      console.error('checkins save failed:', ciErr);
+      alertAdminSyncFailed(username, `打卡记录写入失败 (${ciErr.message})`);
+      return false;
+    }
   }
 
   // 3. Read-back verify: confirm chapter_progress actually landed in Supabase
@@ -417,7 +437,11 @@ async function saveProgress(username, data) {
     .select('completed_chapters')
     .eq('username', username)
     .single();
-  if (vErr || !verify) { console.error('verify read failed:', vErr); return false; }
+  if (vErr || !verify) {
+    console.error('verify read failed:', vErr);
+    alertAdminSyncFailed(username, `写入后回读验证失败 (${vErr?.message || '无数据'})`);
+    return false;
+  }
 
   return true;
 }
