@@ -395,16 +395,30 @@ function getProgress(username) {
 
 async function saveProgress(username, data) {
   DB.progress[username] = data;
-  const { error: progErr } = await sb.from('chapter_progress').upsert({ username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() });
-  if (progErr) console.error('chapter_progress save failed:', progErr);
+
+  // 1. Write chapter progress
+  const { error: progErr } = await sb.from('chapter_progress').upsert(
+    { username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() }
+  );
+  if (progErr) { console.error('chapter_progress save failed:', progErr); return false; }
+
+  // 2. Write check-in if present
   const ci = data.checkins[TODAY];
   if (ci) {
-    const { error: ciErr } = await sb.from('checkins').upsert({ username, date: TODAY, hours: ci.hours, content: ci.content }, { onConflict: 'username,date' });
-    if (ciErr) {
-      console.error('checkins save failed:', ciErr);
-      return false;
-    }
+    const { error: ciErr } = await sb.from('checkins').upsert(
+      { username, date: TODAY, hours: ci.hours, content: ci.content },
+      { onConflict: 'username,date' }
+    );
+    if (ciErr) { console.error('checkins save failed:', ciErr); return false; }
   }
+
+  // 3. Read-back verify: confirm chapter_progress actually landed in Supabase
+  const { data: verify, error: vErr } = await sb.from('chapter_progress')
+    .select('completed_chapters')
+    .eq('username', username)
+    .single();
+  if (vErr || !verify) { console.error('verify read failed:', vErr); return false; }
+
   return true;
 }
 
@@ -1048,7 +1062,7 @@ function renderChapters() {
     </div>`;
 }
 
-function toggleChapter(num, checked) {
+async function toggleChapter(num, checked) {
   const prog = getProgress(currentUser);
   if (checked && !prog.completedChapters.includes(num)) {
     prog.completedChapters.push(num);
@@ -1056,8 +1070,10 @@ function toggleChapter(num, checked) {
   } else if (!checked) {
     prog.completedChapters = prog.completedChapters.filter(c => c !== num);
   }
-  saveProgress(currentUser, prog);
   renderChapters();
+  const ok = await saveProgress(currentUser, prog);
+  if (!ok) showToast('⚠️ 进度同步失败，请检查网络后重试');
+  else showToast('进度已同步 ✓');
 }
 
 // ══════════════════════════════════════════════
@@ -1257,10 +1273,10 @@ async function submitCheckin() {
   closeModal('modal-checkin');
   renderDashboard();
   const ok = await saveProgress(currentUser, prog);
-  if (ok === false) {
+  if (!ok) {
     showToast('⚠️ 打卡保存失败，请检查网络后重试');
   } else {
-    showToast('打卡成功！');
+    showToast('打卡成功，已同步到云端 ✓');
   }
 }
 
