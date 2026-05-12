@@ -393,11 +393,19 @@ function getProgress(username) {
   return DB.progress[username];
 }
 
-function saveProgress(username, data) {
+async function saveProgress(username, data) {
   DB.progress[username] = data;
-  sb.from('chapter_progress').upsert({ username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() });
+  const { error: progErr } = await sb.from('chapter_progress').upsert({ username, completed_chapters: data.completedChapters, updated_at: new Date().toISOString() });
+  if (progErr) console.error('chapter_progress save failed:', progErr);
   const ci = data.checkins[TODAY];
-  if (ci) sb.from('checkins').upsert({ username, date: TODAY, hours: ci.hours, content: ci.content }, { onConflict: 'username,date' });
+  if (ci) {
+    const { error: ciErr } = await sb.from('checkins').upsert({ username, date: TODAY, hours: ci.hours, content: ci.content }, { onConflict: 'username,date' });
+    if (ciErr) {
+      console.error('checkins save failed:', ciErr);
+      return false;
+    }
+  }
+  return true;
 }
 
 function getWebhookConfig() { return DB.webhookConfig; }
@@ -1237,7 +1245,7 @@ function openCheckinModal() {
   document.getElementById('modal-checkin').classList.remove('hidden');
 }
 
-function submitCheckin() {
+async function submitCheckin() {
   const hours = parseFloat(document.getElementById('ci-hours').value);
   const content = document.getElementById('ci-content').value.trim();
   if (!hours || hours <= 0) { showToast('请填写学习时长'); return; }
@@ -1246,10 +1254,14 @@ function submitCheckin() {
 
   const prog = getProgress(currentUser);
   prog.checkins[TODAY] = { hours, content, ts: new Date().toISOString() };
-  saveProgress(currentUser, prog);
   closeModal('modal-checkin');
-  showToast('打卡成功！');
   renderDashboard();
+  const ok = await saveProgress(currentUser, prog);
+  if (ok === false) {
+    showToast('⚠️ 打卡保存失败，请检查网络后重试');
+  } else {
+    showToast('打卡成功！');
+  }
 }
 
 // ══════════════════════════════════════════════
